@@ -8,9 +8,8 @@
 KalmanFilter t_filter;    //temperature filter
 KalmanFilter p_filter;    //pressure filter
 
-
-void printSCDResult(float resultSCD[]);
-void printHP20Result();
+void sendSCDResult();
+void sendHP20Result();
 
 void setup() {
     // Setup I2C
@@ -24,47 +23,32 @@ void setup() {
 
 void loop() {
     
-    // Grove SCD30
-    // Result has CO2 on first element, Temperature on second and humidity on third
-    float resultSCD[3] = {0};
+    // Check if SCD30 is ready
+    // If yes send CO2 in ppm, Temperature in C and Humidity in % to AIB
     if (scd30.isAvailable()) {
-        // Print CO2 in ppm, Temperature in C and Humidity in %
-        printSCDResult(resultSCD);
+        sendSCDResult();
     }
 
-    // Grove barometer
+    // Check if barometer is ready, if yes send pressure in hPa to AIB
     if(HP20x.isAvailable()) {
-      // Print pressure in hPa
-      printHP20Result();
-    } 
+      sendHP20Result();
+    }
 
-    
-    delay(2000); // Dont change - SCD30 only works at 2 seconds delay
+    delay(3000); //Dont change - SCD30 only works at 2 seconds delay
 }
 
-void printSCDResult(float resultSCD[]){
-  Serial.println("---------------------------");
-  scd30.getCarbonDioxideConcentration(resultSCD);
-  Serial.print("CO2 Concentration: ");
-  Serial.print(resultSCD[0]);
-  Serial.print(" ppm");
-  Serial.print("\t");
-  
-  Serial.print("Temperature = ");
-  Serial.print(resultSCD[1]);
-  Serial.print(" ℃");
-  Serial.print("\t");
-
-  Serial.print("Humidity = ");
-  Serial.print(resultSCD[2]);
-  Serial.println(" %");
-  Serial.println(" ");
+void sendSCDResult(){
+    // Result has CO2 on first element, Temperature on second and humidity on third
+    float resultSCD[3] = {0};
+    scd30.getCarbonDioxideConcentration(resultSCD);
+    Serial.print(resultSCD[0]); Serial.print(";");
+    Serial.print(resultSCD[1]); Serial.print(";");
+    Serial.print(resultSCD[2]); Serial.print(";");
 }
 
-void printHP20Result(){
-  long Pressure = HP20x.ReadPressure();
-  float p = Pressure/100.0;
-  Serial.println("Filtered pressure:");
-  Serial.print(p_filter.Filter(p));
-  Serial.println("hPa\n");
+void sendHP20Result()
+{
+    long Pressure = HP20x.ReadPressure();
+    float p = Pressure/100.0;
+    Serial.print(p); Serial.println("");
 }
