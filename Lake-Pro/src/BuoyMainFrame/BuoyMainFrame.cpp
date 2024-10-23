@@ -57,26 +57,17 @@ void parseData(String data) {
         if (startIndex > len_data) break; // To prevent "out of array bounds"
     }
 
-    Serial.print("CO2 [ppm]: ");
-    Serial.println(receivedNumbers[0]);
-    Serial.print("Temperature [C]: ");
-    Serial.println(receivedNumbers[1]);
-    Serial.print("Humidity [%]: ");
-    Serial.println(receivedNumbers[2]);
-    Serial.print("Pressure [hPa]: ");
-    Serial.println(receivedNumbers[3]);
-    Serial.println("------------------------------");
     myFile = SD.open("test.txt", FILE_WRITE);
     if (myFile) {
-        Serial.print("CO2 [ppm]: ");
-        Serial.println(receivedNumbers[0]);
-        Serial.print("Temperature [C]: ");
-        Serial.println(receivedNumbers[1]);
-        Serial.print("Humidity [%]: ");
-        Serial.println(receivedNumbers[2]);
-        Serial.print("Pressure [hPa]: ");
-        Serial.println(receivedNumbers[3]);
-        Serial.println("------------------------------");
+        myFile.print("CO2 [ppm]: ");
+        myFile.println(receivedNumbers[0]);
+        myFile.print("Temperature [C]: ");
+        myFile.println(receivedNumbers[1]);
+        myFile.print("Humidity [%]: ");
+        myFile.println(receivedNumbers[2]);
+        myFile.print("Pressure [hPa]: ");
+        myFile.println(receivedNumbers[3]);
+        myFile.println("------------------------------");
         
         myFile.close();
     } else {
