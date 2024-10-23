@@ -1,5 +1,5 @@
-// File: main.cpp
-// Author: Mechatronics Group 3 - Frederik Højer
+// File: SolarArrayMainFrame.cpp
+// Author: Mechatronics Group 3
 // Date: 2024-10-22
 
 #include <Arduino.h>

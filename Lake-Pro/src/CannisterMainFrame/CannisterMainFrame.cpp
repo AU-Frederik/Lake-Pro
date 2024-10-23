@@ -1,3 +1,7 @@
+// File: CannisterMainFrame.cpp
+// Author: Mechatronics Group 3
+// Date: 2024-10-22
+
 #include "SCD30.h"
 #include <HP20x_dev.h>
 #include "Arduino.h"

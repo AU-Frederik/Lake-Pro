@@ -1,22 +1,37 @@
-// File: main.cpp
-// Author: Mechatronics Group 3 - Frederik Højer
+// File: BuoyMainFrame.cpp
+// Author: Mechatronics Group 3
 // Date: 2024-10-22
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <SPI.h>
+#include <SD.h>
 
 #define rxPin     0
 #define txPin     1
+#define CSPin     10
 #define maxFloats 4  // Number of sensor data that we will receive
 
+// Setup serial to receive data on
 SoftwareSerial softSerial(rxPin, txPin);
 float receivedNumbers[maxFloats]; // Float array to hold all sensor numbers received
 
+// File on SD Card
+File myFile;
+
+// Function declaration
 void parseData(String data);
 
 void setup() {
+    pinMode(CSPin, OUTPUT);
     Serial.begin(9600);
     softSerial.begin(9600);
+    // Initialize SD card
+    if (!SD.begin(CSPin)) {
+        Serial.println("SD card initialization failed!");
+        return;
+    }
+    Serial.println("SD card initialized.");
 }
 
 void loop() {
@@ -51,4 +66,20 @@ void parseData(String data) {
     Serial.print("Pressure [hPa]: ");
     Serial.println(receivedNumbers[3]);
     Serial.println("------------------------------");
+    myFile = SD.open("test.txt", FILE_WRITE);
+    if (myFile) {
+        Serial.print("CO2 [ppm]: ");
+        Serial.println(receivedNumbers[0]);
+        Serial.print("Temperature [C]: ");
+        Serial.println(receivedNumbers[1]);
+        Serial.print("Humidity [%]: ");
+        Serial.println(receivedNumbers[2]);
+        Serial.print("Pressure [hPa]: ");
+        Serial.println(receivedNumbers[3]);
+        Serial.println("------------------------------");
+        
+        myFile.close();
+    } else {
+        Serial.println("Error saving data to file on SD card.");
+    }
 }
