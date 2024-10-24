@@ -1,0 +1,30 @@
+#pragma once
+#include "../setup/modules.h"
+
+void receiveDataFromUARTAndPrintToSDCard() {
+    if (softSerial.available() > 0) {
+        
+        
+        // Print all numbers in receivedNumbers to SD Card separated with a comma 
+        for (int i=0; i<floatCount; i++){
+            printDataToSDCard(receivedNumbers[i]);
+        }
+    }
+}
+
+void parseData() {
+    String data = softSerial.readStringUntil('\n');
+        int startIndex = 0;
+        int endIndex = data.indexOf(";", startIndex);
+        int floatCount = 0;
+        int len_data = (int) data.length();
+
+        while (floatCount < maxFloats) {
+            String token = data.substring(startIndex, endIndex); // saves next number as token, seperatered by ";"
+            receivedNumbers[floatCount] = token.toFloat();
+            startIndex = endIndex + 1;
+            floatCount++;
+            endIndex = data.indexOf(";", startIndex);
+            if (startIndex > len_data) break; // To prevent "out of array bounds"
+        }
+}
