@@ -71,6 +71,24 @@ void printTime() {
     Serial.println(myRTC.getSecond(), DEC);
 }
 
+void printTimeToSD() {
+    myFile = SD.open(SENSOR_DATA_FILENAME, FILE_WRITE);
+    if (myFile) {
+      myFile.print(myRTC.getYear(), DEC);
+      myFile.print("-");
+      myFile.print(myRTC.getMonth(century), DEC);
+      myFile.print("-");
+      myFile.print(myRTC.getDate(), DEC);
+      myFile.print(" ");
+      myFile.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
+      myFile.print(":");
+      myFile.print(myRTC.getMinute(), DEC);
+      myFile.print(":");
+      myFile.println(myRTC.getSecond(), DEC);
+    }
+    myFile.close();
+}
+
 
 // This function is written by Eric Ayars, who made the library used ("DS3231.h")
 void inputDateFromSerial() {

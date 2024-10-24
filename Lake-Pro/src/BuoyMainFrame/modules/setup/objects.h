@@ -2,7 +2,7 @@
 #include "modules.h"
 
 // Software serial for sending UART between buoy and cannister
-SoftwareSerial softSerial(rxPin, txPin);
+SoftwareSerial mySerial = SoftwareSerial(rxPin, txPin);
 
 // RTC object
 DS3231 myRTC;

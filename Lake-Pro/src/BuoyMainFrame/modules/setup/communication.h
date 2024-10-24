@@ -5,5 +5,5 @@
 void setupCommunication(){
     Wire.begin();               // I2C 
     Serial.begin(9600);         // For printing to monitor
-    softSerial.begin(9600);     // For UART communication with cannister
+    mySerial.begin(9600);     // For UART communication with cannister
 }

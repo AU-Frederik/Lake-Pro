@@ -9,3 +9,4 @@ void inputDateFromSerial();
 void printTime();
 void printDataToSDCard(float);
 void parseData();
+void setUpSDCard();

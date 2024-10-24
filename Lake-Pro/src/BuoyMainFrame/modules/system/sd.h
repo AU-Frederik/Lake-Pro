@@ -11,15 +11,28 @@ void setUpSDCard(){
     Serial.println("SD card initialized.");
 }
 
-
 // Prints a float data to the file on the SD Card and a comma
 void printDataToSDCard(float data) {
-    myFile = SD.open("results.txt", FILE_WRITE);
+    myFile = SD.open(SENSOR_DATA_FILENAME, FILE_WRITE);
     if (myFile) {
         myFile.print(data);
         myFile.print(",");
-        myFile.close();
     } else {
         Serial.println("Error saving data to file on SD card.");
+    }
+    myFile.close();
+}
+
+void printDataOnSDCard(){
+    myFile = SD.open(SENSOR_DATA_FILENAME);
+    if (myFile) {
+        while (myFile.available()) {
+        Serial.write(myFile.read());
+    }
+    // close the file:
+    myFile.close();
+    } else {
+    // if the file didn't open, print an error:
+        Serial.println("error opening file to read");
     }
 }

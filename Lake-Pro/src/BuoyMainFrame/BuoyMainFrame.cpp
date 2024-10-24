@@ -8,13 +8,8 @@ void setup() {
     setupCommunication();
     initAllPins();
     setUpSDCard();
-    // Uncomment for setting time and date 
-    showRTCTimeSettings();
 }
 
 void loop() {
-    // Uncomment for setting time and date from serial monitor input
-    setRTCTimeFromSerialInput();
     receiveDataFromUARTAndPrintToSDCard();
-    printTime();
 }

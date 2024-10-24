@@ -26,7 +26,6 @@ void setup() {
 }
 
 void loop() {
-    
     // Check if SCD30 is ready
     // If yes send CO2 in ppm, Temperature in C and Humidity in % to AIB
     if (scd30.isAvailable()) {
@@ -54,5 +53,5 @@ void sendHP20Result()
 {
     long Pressure = HP20x.ReadPressure();
     float p = Pressure/100.0;
-    Serial.print(p); Serial.println("");
+    Serial.print(p); Serial.println(";");
 }
