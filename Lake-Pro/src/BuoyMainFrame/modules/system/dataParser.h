@@ -1,10 +1,11 @@
 #pragma once
 #include "../setup/modules.h"
 
+// Receives data from cannister via UART, separates it and prints on SD Card separated by comma. 
 void receiveDataFromUARTAndPrintToSDCard() {
     if (softSerial.available() > 0) {
-        
-        
+        parseData();
+
         // Print all numbers in receivedNumbers to SD Card separated with a comma 
         for (int i=0; i<floatCount; i++){
             printDataToSDCard(receivedNumbers[i]);
@@ -12,6 +13,7 @@ void receiveDataFromUARTAndPrintToSDCard() {
     }
 }
 
+// Reads data from cannister, parses it and saves the floats to a float array
 void parseData() {
     String data = softSerial.readStringUntil('\n');
         int startIndex = 0;

@@ -14,9 +14,10 @@
 #include "pinout.h"
 #include "objects.h"
 #include "protypes.h"
-
+#include "pinmode.h"
+#include "communication.h"
 
 // System files
 #include "../system/rtc.h"
 #include "../system/sd.h"
-#include "../system/dataParser"
+#include "../system/dataParser.h"

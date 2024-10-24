@@ -3,5 +3,9 @@
 
 // Function declaration
 void receiveDataFromUARTAndPrintToSDCard();
-void setRTCData();
+void setRTCTimeFromSerialInput();
+void showRTCTimeSettings();
+void inputDateFromSerial();
+void printTime();
 void printDataToSDCard(float);
+void parseData();
