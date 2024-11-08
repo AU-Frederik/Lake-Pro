@@ -57,7 +57,8 @@ float CH4_Measurement = 0;
 
 float outsideTemperature_Measurement;
 
-void setup() {
+void setup() 
+{
     // Setup I2C
     Wire.begin();
     Serial.begin(9600);
@@ -74,7 +75,8 @@ void setup() {
     }
 }
 
-void loop() {
+void loop() 
+{
     // Check if SCD30 is ready
     // If yes send CO2 in ppm, Temperature in C and Humidity in % to AIB
     if (scd30.isAvailable()) {
@@ -107,7 +109,8 @@ void loop() {
     delay(3000); //Dont change - SCD30 only works at 2.1 seconds delay or above.
 }
 
-void SCD30_Measure(){
+void SCD30_Measure()
+{
     int resultLen = 3;
     // Result has CO2 on first element, Temperature on second and humidity on third
     float resultSCD[resultLen] = {0};
@@ -122,4 +125,16 @@ void HP20_Measure()
     long Pressure = HP20x.ReadPressure();
     float p = Pressure/100.0;
     Serial.print(p); Serial.println(";");
+}
+
+void DHT22_Measure() 
+{
+    humidity_Measurement_DHT    = dht.readHumidity();
+    temperature_Measurement_DHT = dht.readTemperature();
+}
+
+void outsideTemp_Measure()
+{
+    outsideTempSensor.read();
+    outsideTemperature_Measurement = outsideTempSensor.temperature();
 }
