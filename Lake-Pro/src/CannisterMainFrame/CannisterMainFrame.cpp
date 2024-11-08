@@ -75,11 +75,6 @@ void setup() {
 }
 
 void loop() {
-<<<<<<< HEAD
-    dataString = "";
-    
-=======
->>>>>>> main
     // Check if SCD30 is ready
     // If yes send CO2 in ppm, Temperature in C and Humidity in % to AIB
     if (scd30.isAvailable()) {
@@ -125,20 +120,6 @@ void SCD30_Measure(){
 void HP20_Measure()
 {
     long Pressure = HP20x.ReadPressure();
-<<<<<<< HEAD
-    pressure_Measurement_HP20 = Pressure/100.0;
-}
-
-void DHT22_Measure(){
-    humidity_Measurement_DHT    = dht.readHumidity();
-    temperature_Measurement_DHT = dht.readTemperature();
-}
-
-void outsideTemp_Measure(){
-    outsideTempSensor.read();
-    outsideTemperature_Measurement = outsideTempSensor.temperature();
-=======
     float p = Pressure/100.0;
     Serial.print(p); Serial.println(";");
->>>>>>> main
 }
