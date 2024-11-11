@@ -14,6 +14,9 @@ void measureAll(){
     // Measure outside temperature
     outsideTemp_Measure(&outsideTemperature);
 
+    // Measures pressure outside and calculates depth (inside the reference pressure can be calculated differently)
+    outsidePressureAndDepth_Measure(&outsidePressure, &depth);
+
     // Measure CH4
     CH4_Measure(&CH4_sensorVolt);
 
@@ -21,8 +24,7 @@ void measureAll(){
     convertCH4SensorToCH4ppm(&CH4ppm);
 }
 
-// Measures co2, temperature and humidity on the SCD30 sensor
-// given pointers to the global variables
+// Measures CO2, temperature and humidity on the SCD30 sensor
 void SCD30_Measure(float* co2, float* temperature, float* humidity)
 {
     int resultLen = 3;
@@ -66,8 +68,21 @@ void outsideTemp_Measure(float* temperature)
     *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
 }
 
+// Measures the sensor volt from the ADC connected to the Figaro sensor
 void CH4_Measure(float* CH4){
     CH4_sensorVolt = ads.readADC_SingleEnded(0);
+}
+
+// Measures the outside pressure and calculates the depth
+void outsidePressureAndDepth_Measure(float* pressure, float* depth) {
+    outsidePressureSensor.read();
+    *pressure = outsidePressureSensor.pressure();
+
+    // Calculates the depth (change ref_pressure to buoy pressure)
+    float ref_pressure = 101325;    // Pa
+    float fluidDensity = 997;       // kg/m^3
+    float g_acc        = 9.80665;   // m/s^2
+    *depth = (*pressure-ref_pressure)/(fluidDensity*g_acc);
 }
 
 

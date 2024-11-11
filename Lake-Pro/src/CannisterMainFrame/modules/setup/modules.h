@@ -8,6 +8,7 @@
 #include <DHT.h>
 #include <Adafruit_ADS1X15.h>
 #include <TSYS01.h>
+#include "KellerLD.h"
 
 // Setup files
 #include "constants.h"

@@ -2,8 +2,9 @@
 
 #include "modules.h"
 
-/* Instance */
-KalmanFilter p_filter;    //pressure filter
-DHT dht(DHT22_PIN, DHTTYPE);
-Adafruit_ADS1115 ads;
-TSYS01 outsideTempSensor;
+/* Instances */
+KalmanFilter      p_filter;
+DHT               dht(DHT22_PIN, DHTTYPE);
+Adafruit_ADS1115  ads;
+TSYS01            outsideTempSensor;
+KellerLD          outsidePressureSensor;
