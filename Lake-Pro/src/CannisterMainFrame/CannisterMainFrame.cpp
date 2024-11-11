@@ -14,7 +14,6 @@ MISSING:
 - BAR100 (OUTSIDE PRESSURE SENSOR)
 */
 
-
 #include "SCD30.h"
 #include <HP20x_dev.h>
 #include "Arduino.h"
@@ -30,78 +29,98 @@ MISSING:
 String dataString;
 
 /* Instance */
-KalmanFilter t_filter;    //temperature filter
 KalmanFilter p_filter;    //pressure filter
 DHT dht(DHT22_PIN, DHTTYPE);
 Adafruit_ADS1115 ads;
 TSYS01 outsideTempSensor;
 
-void SCD30_Measure();
-void HP20_Measure();
-void DHT22_Measure();
-void outsideTemp_Measure();
+/* Prototypes */
+void SCD30_Measure(float*, float*, float*);
+void HP20_Measure(float*);
+void DHT22_Measure(float*, float*);
+void outsideTemp_Measure(float*);
+bool preheatMethaneSensor();
+void convertCH4SensorToCH4ppm(float*);
 
-float CO2_Measurement_SCD = 0;
-float humidity_Measurement_SCD = 0;
-float temperature_Measurement_SCD = 0;
-
-float humidity_Measurement_DHT = 0;
-float temperature_Measurement_DHT = 0;
-
-float pressure_Measurement_HP20 = 0;
-
-float average_Temperature = 0;
-float average_Humidity = 0;
-
-float CH4_Measurement = 0;
-
-float outsideTemperature_Measurement;
+/* Global variables */
+float co2_SCD;
+float humidity_SCD;
+float temperature_SCD;
+float humidity_DHT;
+float temperature_DHT;
+float pressure_HP20;
+float avg_Temperature;
+float avg_Humidity;
+float CH4_sensorVolt;
+float outsideTemperature;
+float CH4ppm;
+unsigned long myTime;
+unsigned long minutesToPreHeat = 360;
+unsigned long timeToPreheat = minutesToPreHeat * 60 * 1000; // minutes * 60 seconds/min * 1000 milliseconds/second
 
 void setup() 
 {
     // Setup I2C
     Wire.begin();
     Serial.begin(9600);
-    dht.begin();
-    //ads.begin();
-    //ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV  0.1875mV (default)
 
     // Setup sensors
     HP20x.begin();
     scd30.initialize();
+    dht.begin();
     while (!outsideTempSensor.init()) {
         Serial.println("TSYS01 device failed to initialize!");
-        delay(2000);
+        delay(1000);
     }
+    
+    while(!ads.begin()) {
+        Serial.println("ADC device failed to initialize!");
+        delay(1000);
+    }
+    ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV  0.1875mV (default)
+
+    /*while (preheatMethaneSensor() != true){
+        Serial.println("Preheating methane sensor...");
+        delay(1000);
+    }*/
+
+    delay(1000);
 }
 
 void loop() 
-{
+{     
+    dataString = "";
     // Check if SCD30 is ready
-    // If yes send CO2 in ppm, Temperature in C and Humidity in % to AIB
+    // If yes measure CO2 in ppm, Temperature in C and Humidity in %
     if (scd30.isAvailable()) {
-        SCD30_Measure();
+        SCD30_Measure(&co2_SCD, &temperature_SCD, &humidity_SCD); // passing in pointers
     }
 
-    // Check if barometer is ready, if yes send pressure in hPa to AIB
+    // Check if barometer is ready, if yes measure pressure in hPa
     if(HP20x.isAvailable()) {
-        HP20_Measure();
+        HP20_Measure(&pressure_HP20); // passing in pointer
     }
 
-    // Measure temperature and humidity
-    DHT22_Measure();
-    outsideTemp_Measure();
+    // Measure temperature and humidity (passing in pointers)
+    DHT22_Measure(&humidity_DHT, &temperature_DHT);
 
-    average_Temperature = (temperature_Measurement_DHT+temperature_Measurement_SCD)/2;
-    average_Humidity = (humidity_Measurement_DHT+humidity_Measurement_SCD)/2;
-    //CH4_Measurement = ads.readADC_SingleEnded(0);
+    // Measure outside temperature (passing in pointers)
+    outsideTemp_Measure(&outsideTemperature);
 
-    dataString += String(CO2_Measurement_SCD) + ';';
-    dataString += String(average_Humidity) + ';';
-    dataString += String(average_Temperature) + ';';
-    dataString += String(pressure_Measurement_HP20) + ';';
-    dataString += String(outsideTemperature_Measurement) + ';';
-    //dataString += String(CH4_Measurement);
+    // Calculate average temperature and humidity based on the two sensors
+    avg_Temperature = (temperature_DHT+temperature_SCD)/2;
+    avg_Humidity = (humidity_DHT+humidity_SCD)/2;
+    CH4_sensorVolt = ads.readADC_SingleEnded(0);
+
+    convertCH4SensorToCH4ppm(&CH4ppm);
+
+    dataString += String(co2_SCD) + ';';
+    dataString += String(avg_Humidity) + ';';
+    dataString += String(avg_Temperature) + ';';
+    dataString += String(pressure_HP20) + ';';
+    dataString += String(outsideTemperature) + ';';
+    dataString += String(CH4_sensorVolt) + ';';
+    dataString += String(CH4ppm);
 
     // Send string of sensor data with a new line
     Serial.println(dataString);
@@ -109,32 +128,79 @@ void loop()
     delay(3000); //Dont change - SCD30 only works at 2.1 seconds delay or above.
 }
 
-void SCD30_Measure()
+// Measures co2, temperature and humidity on the SCD30 sensor
+// given pointers to the global variables
+void SCD30_Measure(float* co2, float* temperature, float* humidity)
 {
     int resultLen = 3;
     // Result has CO2 on first element, Temperature on second and humidity on third
     float resultSCD[resultLen] = {0};
     scd30.getCarbonDioxideConcentration(resultSCD);
-    CO2_Measurement_SCD         = resultSCD[0];
-    temperature_Measurement_SCD = resultSCD[1];
-    humidity_Measurement_SCD    = resultSCD[2];
+    *co2         = resultSCD[0];
+    *temperature = resultSCD[1];
+    *humidity    = resultSCD[2];
 }
 
-void HP20_Measure()
+// Measures pressure on the HP20 sensor, given a pointer to the global variable
+void HP20_Measure(float* pressure)
 {
-    long Pressure = HP20x.ReadPressure();
-    float p = Pressure/100.0;
-    Serial.print(p); Serial.println(";");
+    long readPressure = HP20x.ReadPressure();
+    *pressure = p_filter.Filter(readPressure/100.0);
 }
 
-void DHT22_Measure() 
+// Measures humidity and temperature on the DHT22 sensor, given pointers to the global variables
+void DHT22_Measure(float* humidity, float* temperature) 
 {
-    humidity_Measurement_DHT    = dht.readHumidity();
-    temperature_Measurement_DHT = dht.readTemperature();
+    float h   = dht.readHumidity();
+    float t   = dht.readTemperature();
+
+    *humidity = isnan(h) ? 0.0 : h;  // fallback to 0.0 if NaN
+    *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
 }
 
-void outsideTemp_Measure()
+// Measures outside temperature on the TSYS01 sensor, given a pointer to the global variable
+void outsideTemp_Measure(float* temperature)
 {
     outsideTempSensor.read();
-    outsideTemperature_Measurement = outsideTempSensor.temperature();
+    float t = outsideTempSensor.temperature();
+    *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
+}
+
+bool preheatMethaneSensor() {
+    bool isReady = false;
+    myTime = millis();
+    if (myTime > timeToPreheat) {
+        isReady = true;
+        Serial.println("Methane sensor is now preheated.");
+    }
+    return isReady;
+}
+
+void convertCH4SensorToCH4ppm(float* CH4ppm){
+      //CH4ppm conversion
+    float Pws = 0;
+    float Pw = 0;
+    float Vo = 0; 
+    float Rs_Ro = 0;
+    uint16_t Vc = 5000;  
+    float g = 8.740 / pow(10,3)  ;
+    float p = 129.83 ;
+    float a = 3.2938 ;
+    float b = -3.755 ;
+    float c = 1.5718 / pow(10,6) ;
+    float K = -1.4529;
+    uint16_t H2Oppm = 0;
+
+    // Define coefficients for RH to H2Oppm
+    float A = 6.116441;
+    float m = 7.591386;
+    float Tn = 240.7263;
+    uint16_t Pressure = 1013; //mbar
+
+    Pws = A * pow(10, ((m*avg_Temperature)/(avg_Temperature+Tn)));
+    Pw = avg_Humidity * Pws/100;
+    H2Oppm = Pw * pow(10,6)/Pressure;
+    Vo = g * H2Oppm + p;
+    Rs_Ro = ((Vc/CH4_sensorVolt)-1)/((Vc/Vo)-1);
+    *CH4ppm = a*pow(Rs_Ro,b) + c*(a*pow(Rs_Ro,b))*H2Oppm + K;
 }
