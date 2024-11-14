@@ -21,10 +21,14 @@ void initSensors(){
     ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV  0.1875mV (default)
 
     // Initiliazes BAR100 - outside pressure sensor and sets fluid density
+    /*outsidePressureSensor.init();
     while (!outsidePressureSensor.isInitialized()) {
+        Serial.println("BAR100 device failed to initialize! Trying again...");
         outsidePressureSensor.init();
+        delay(1000);
     }
     outsidePressureSensor.setFluidDensity(997); // kg/m^3 (freshwater, 1029 for seawater)
+    */
 }
 
 void preheatMethaneSensor() {

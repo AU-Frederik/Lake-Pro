@@ -10,6 +10,9 @@ SYSTEM CONSISTS OF:
 - TSYS01                TEMPERATURE SENSOR IN WATER
 - FIGARO NGM2611-E13    CH4 SENSOR THROUGH ADS1115
 - BAR100                OUTSIDE PRESSURE SENSOR - NOT TESTED YET
+
+Missing: 
+- FD02                  OXYGEN SENSOR
 */
 
 #include "./modules/setup/modules.h"

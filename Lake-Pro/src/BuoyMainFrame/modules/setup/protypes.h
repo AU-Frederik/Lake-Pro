@@ -7,6 +7,5 @@ void setRTCTimeFromSerialInput();
 void showRTCTimeSettings();
 void inputDateFromSerial();
 void printTime();
-void printDataToSDCard(float);
-void parseData();
+void printDataToSDCard(String);
 void setUpSDCard();

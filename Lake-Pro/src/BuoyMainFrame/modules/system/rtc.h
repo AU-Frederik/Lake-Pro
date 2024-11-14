@@ -83,8 +83,10 @@ void printTimeToSD() {
       myFile.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
       myFile.print(":");
       myFile.print(myRTC.getMinute(), DEC);
-      myFile.print(":");
-      myFile.println(myRTC.getSecond(), DEC);
+      myFile.print(": ");
+      myFile.print(myRTC.getSecond(), DEC);
+    } else {
+      Serial.println("Error at opening SD file for adding RTC time.");
     }
     myFile.close();
 }
