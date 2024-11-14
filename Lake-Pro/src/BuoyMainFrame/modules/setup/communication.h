@@ -4,6 +4,6 @@
 // Sets up the different communication ways
 void setupCommunication(){
     Wire.begin();               // I2C 
-    Serial.begin(9600);         // For printing to monitor
-    Serial1.begin(9600);
+    COM_DEBUG.begin(COM_DEBUG_BAUDRATE);          // For printing to monitor
+    COM_CANNISTER.begin(COM_CANNISTER_BAUDRATE);  // For RX/TX to cannister
 }

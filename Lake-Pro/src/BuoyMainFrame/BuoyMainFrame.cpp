@@ -20,11 +20,11 @@ void setup() {
 
 void loop() {
     // Receives data from cannister via UART, separates it and prints on SD Card separated by comma. 
-    if (Serial1.available()) {
-        String data = Serial1.readStringUntil('\n');
-        Serial.print("Received data: ");
-        Serial.println(data);
+    if (COM_CANNISTER.available()) {
+        String data = COM_CANNISTER.readStringUntil('\n');
+        COM_DEBUG.print("Received data: ");
+        COM_DEBUG.println(data);
+        printTimeToSD();
         printDataToSDCard(data);
-        printTimeToSD();    
     }
 }

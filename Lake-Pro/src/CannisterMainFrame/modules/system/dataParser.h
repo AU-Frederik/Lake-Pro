@@ -42,7 +42,7 @@ void packageAndSendData() {
     dataString += String(CH4ppm) + ";";
 
     // Send string of sensor data with a new line
-    Serial1.println(dataString);
+    COM_BUOY.println(dataString);
 }
 
 void calculateAverageTempAndHumidity(float* temp, float* humidity) {

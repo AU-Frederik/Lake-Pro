@@ -5,10 +5,10 @@
 void setUpSDCard(){
     // Initialize SD card
     while (!SD.begin(CSPin)) {
-        Serial.println("SD card initialization failed!");
+        COM_DEBUG.println("SD card initialization failed!");
         delay(1000);
     }
-    Serial.println("SD card initialized.");
+    COM_DEBUG.println("SD card initialized.");
 }
 
 // Prints a float data to the file on the SD Card and a comma
@@ -17,7 +17,7 @@ void printDataToSDCard(String data) {
     if (myFile) {
         myFile.print(data);
     } else {
-        Serial.println("Error saving data to file on SD card.");
+        COM_DEBUG.println("Error saving data to file on SD card.");
     }
     myFile.close();
 }
@@ -26,11 +26,11 @@ void printDataOnSDCard(){
     myFile = SD.open(SENSOR_DATA_FILENAME);
     if (myFile) 
     {
-        while (myFile.available()) {Serial.write(myFile.read());}
+        while (myFile.available()) {COM_DEBUG.write(myFile.read());}
         myFile.close();
     } else 
     { 
         // if the file didn't open, print an error:
-        Serial.println("error opening file to read");
+        COM_DEBUG.println("error opening file to read");
     }
 }
