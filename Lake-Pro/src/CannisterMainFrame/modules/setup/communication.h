@@ -6,5 +6,5 @@ void setupCommunication(){
     Wire.begin();
     COM_DEBUG.begin(COM_DEBUG_BAUDRATE);
     COM_BUOY.begin(COM_BUOY_BAUDRATE);
-    COM_FD02.begin(COM_FD02_BAUDRATE);
+    COM_FD02.begin(COM_FD02_BAUDRATE, SERIAL_8N1);
 }

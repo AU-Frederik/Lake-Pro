@@ -31,6 +31,19 @@ void setup()
 
 void loop() 
 {
+    
+
+    // For the FD02
+    /*if (COM_FD02.available()){
+        Serial2.print("#MOXY\r");  // Original command
+
+        delay(500);
+        String msg = COM_FD02.readStringUntil('\n');
+        COM_DEBUG.print("msg: ");
+        COM_DEBUG.println(msg);
+    }
+    COM_DEBUG.println("Hello!");*/
+
     // String to hold the data package - resets every loop
     dataString = "";
 

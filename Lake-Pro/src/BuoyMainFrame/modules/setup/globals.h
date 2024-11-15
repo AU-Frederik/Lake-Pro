@@ -15,3 +15,19 @@ byte dow;
 byte hour;
 byte minute;
 byte second;
+
+// From cannister
+float co2_SCD;
+float avg_Humidity;
+float avg_Temperature;
+float pressure_HP20;
+float outsideTemperature;
+float CH4_sensorVolt;
+float outsidePressure;
+float depth;
+float CH4ppm;
+
+// Motor pins
+int manualMode;
+int turnMotorCCW;
+int turnMotorCW;
