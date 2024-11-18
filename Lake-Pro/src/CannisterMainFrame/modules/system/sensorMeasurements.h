@@ -4,7 +4,7 @@
 void measureAll(){  
 
     // If message is not M it will only send outsidePressure and depth
-    if (message != "M"){
+    if (message.charAt(0) != 'M'){
         outsidePressure_Measure(&outsidePressure);
         co2_SCD             = 0;
         avg_Humidity        = 0;
@@ -14,10 +14,13 @@ void measureAll(){
         CH4_sensorVolt      = 0;
         CH4ppm              = 0;
 
+        COM_DEBUG.println("Not measuring...");
+        COM_DEBUG.println("message = " + message.charAt(0));
+
         return;
-    }
+    } 
 
-
+    COM_DEBUG.println("Measuring...");
     // measure CO2 in ppm, Temperature in C and Humidity in %
     SCD30_Measure(&co2_SCD, &temperature_SCD, &humidity_SCD);
 

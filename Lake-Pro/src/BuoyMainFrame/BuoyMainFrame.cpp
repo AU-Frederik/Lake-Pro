@@ -18,11 +18,13 @@ String message = "M10"; // Set manual right now before implementing LoRa
 void setup() {
     setupCommunication();
     initAllPins();
+    digitalWrite(CannisterON_Pin, HIGH);
     setUpSDCard();
 
     // Make sure that Rotiny is set to low
-    digitalWrite(MOTOR_CW_PIN, HIGH);
-    digitalWrite(MOTOR_CCW_PIN, LOW);
+    digitalWrite(MOTOR_DOWN_PIN , LOW);
+    digitalWrite(MOTOR_UP_PIN   , LOW);
+    
 }
 
 void loop() {
@@ -38,13 +40,14 @@ void loop() {
 
     // Calculates the depth (change ref_pressure to buoy pressure)
     depth = (outsidePressure-ref_pressure)/(waterDensity*g_acc);
+    COM_CANNISTER.println('M');
 }
 
 // Measures the three pins of the manual buttons
 void measureMotorPins(){
-    manualMode = digitalRead(MOTOR_SWITCH_AUT);
+    manualMode   = digitalRead(MOTOR_SWITCH_AUT);
     turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
-    turnMotorCW = digitalRead(MOTOR_BUTTON_RIGHT);
+    turnMotorCW  = digitalRead(MOTOR_BUTTON_RIGHT);
 }
 
 // Only call when manualMode is true. Turns motor according to motor buttons pressed
@@ -109,22 +112,24 @@ void goToDepthAndMeasure() {
 
     if (insideTolerance){
         COM_CANNISTER.println('M');
+    } else {
+        COM_CANNISTER.println('W');
     }
 }
 
 void moveMotorUp(){
-    digitalWrite(MOTOR_CW_PIN, LOW);
-    digitalWrite(MOTOR_CCW_PIN, HIGH);
+    digitalWrite(MOTOR_DOWN_PIN, LOW);
+    digitalWrite(MOTOR_UP_PIN, HIGH);
 }
 
 void moveMotorDown(){
-    digitalWrite(MOTOR_CW_PIN, HIGH);
-    digitalWrite(MOTOR_CCW_PIN, LOW);
+    digitalWrite(MOTOR_DOWN_PIN, HIGH);
+    digitalWrite(MOTOR_UP_PIN, LOW);
 }
 
 void holdMotor(){
-    digitalWrite(MOTOR_CW_PIN, LOW);
-    digitalWrite(MOTOR_CCW_PIN, LOW);
+    digitalWrite(MOTOR_DOWN_PIN, LOW);
+    digitalWrite(MOTOR_UP_PIN, LOW);
 }
 
 // Does nothing right now
@@ -137,9 +142,6 @@ void receiveFromUARTAndPrintToSDCard(){
         // Saves data received via UART from cannister to one long string
         String data = COM_CANNISTER.readStringUntil('\n');
         
-        // Print data received to the debugger monitor
-        COM_DEBUG.print("Received data: ");
-        COM_DEBUG.println(data);
 
         // Split data and add each data element to the global variables
         parseDataFromCannister(data);

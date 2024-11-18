@@ -36,12 +36,14 @@ void packageAndSendData() {
     dataString += String(avg_Temperature) + ';';
     dataString += String(pressure_HP20) + ';';
     dataString += String(outsideTemperature) + ';';
-    dataString += String(CH4_sensorVolt) + ';';
     dataString += String(outsidePressure) + ';';
+    dataString += String(CH4_sensorVolt) + ';';
     dataString += String(CH4ppm) + ";";
 
     // Send string of sensor data with a new line
     COM_BUOY.println(dataString);
+    COM_DEBUG.print("Sending data to buoy: ");
+    COM_DEBUG.println(dataString);
 }
 
 void calculateAverageTempAndHumidity(float* temp, float* humidity) {

@@ -9,7 +9,7 @@
 #define COM_DEBUG                   Serial
 #define COM_DEBUG_BAUDRATE          9600
 
-#define COM_CANNISTER               Serial1
+#define COM_CANNISTER               Serial2
 #define COM_CANNISTER_BAUDRATE      9600
 
 #define ref_pressure                101325  // Pa
