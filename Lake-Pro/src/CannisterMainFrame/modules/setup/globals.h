@@ -13,7 +13,7 @@ float avg_Humidity;
 float CH4_sensorVolt;
 float outsideTemperature;
 float outsidePressure;
-float depth;
 float CH4ppm;
 unsigned long myTime;
 String dataString;
+String message;

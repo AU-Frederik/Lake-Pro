@@ -24,7 +24,7 @@ void printDataToSDCard(String data) {
 
 void printDataOnSDCard(){
     myFile = SD.open(SENSOR_DATA_FILENAME);
-    if (myFile) 
+    if (myFile)
     {
         while (myFile.available()) {COM_DEBUG.write(myFile.read());}
         myFile.close();

@@ -1,7 +1,23 @@
 #pragma once
 #include "../setup/modules.h"
 
-void measureAll(){
+void measureAll(){  
+
+    // If message is not M it will only send outsidePressure and depth
+    if (message != "M"){
+        outsidePressure_Measure(&outsidePressure);
+        co2_SCD             = 0;
+        avg_Humidity        = 0;
+        avg_Temperature     = 0;
+        pressure_HP20       = 0;
+        outsideTemperature  = 0;
+        CH4_sensorVolt      = 0;
+        CH4ppm              = 0;
+
+        return;
+    }
+
+
     // measure CO2 in ppm, Temperature in C and Humidity in %
     SCD30_Measure(&co2_SCD, &temperature_SCD, &humidity_SCD);
 
@@ -15,7 +31,7 @@ void measureAll(){
     outsideTemp_Measure(&outsideTemperature);
 
     // Measures pressure outside and calculates depth (inside the reference pressure can be calculated differently)
-    outsidePressureAndDepth_Measure(&outsidePressure, &depth);
+    outsidePressure_Measure(&outsidePressure);
 
     // Measure CH4
     CH4_Measure(&CH4_sensorVolt);
@@ -74,15 +90,9 @@ void CH4_Measure(float* CH4){
 }
 
 // Measures the outside pressure and calculates the depth
-void outsidePressureAndDepth_Measure(float* pressure, float* depth) {
+void outsidePressure_Measure(float* pressure) {
     outsidePressureSensor.read();
     *pressure = outsidePressureSensor.pressure();
-
-    // Calculates the depth (change ref_pressure to buoy pressure)
-    float ref_pressure = 101325;    // Pa
-    float fluidDensity = 997;       // kg/m^3
-    float g_acc        = 9.80665;   // m/s^2
-    *depth = (*pressure-ref_pressure)/(fluidDensity*g_acc);
 }
 
 

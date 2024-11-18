@@ -13,15 +13,15 @@ S: Check solar status
 #include "./modules/setup/modules.h"
 
 bool isAMessage = false;
-String message;
+String message = "M10"; // Set manual right now before implementing LoRa
 
 void setup() {
     setupCommunication();
     initAllPins();
     setUpSDCard();
-    // showRTCTimeSettings(); // Uncomment to set time
 
-    digitalWrite(MOTOR_CW_PIN, LOW);
+    // Make sure that Rotiny is set to low
+    digitalWrite(MOTOR_CW_PIN, HIGH);
     digitalWrite(MOTOR_CCW_PIN, LOW);
 }
 
@@ -29,39 +29,115 @@ void loop() {
     measureMotorPins();
     if (manualMode){
         enableManualMode();
+    } else {
+        reactToCommand();
     }
 
-    //setRTCTimeFromSerialInput(); // Uncomment to set time
+    // Receives data from cannister via UART, prints to debug monitor and SD card
+    receiveFromUARTAndPrintToSDCard();
 
-    if (COM_DEBUG.available()){
-        message = COM_DEBUG.readStringUntil('.');
-        char firstChar = message.charAt(0);
+    // Calculates the depth (change ref_pressure to buoy pressure)
+    depth = (outsidePressure-ref_pressure)/(waterDensity*g_acc);
+}
 
-        // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
-        switch(firstChar) {
-            case 'M': 
-                goToDepthAndMeasure();
-                break;
-            case 'B':
-            case 'S':
-                isAMessage = true;
-                break;
-            default:
-                isAMessage = false;
-        }
+// Measures the three pins of the manual buttons
+void measureMotorPins(){
+    manualMode = digitalRead(MOTOR_SWITCH_AUT);
+    turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
+    turnMotorCW = digitalRead(MOTOR_BUTTON_RIGHT);
+}
+
+// Only call when manualMode is true. Turns motor according to motor buttons pressed
+void enableManualMode(){
+    if (!turnMotorCCW && turnMotorCW){ 
+        moveMotorUp(); // Turn CW
+    } else if (turnMotorCCW && !turnMotorCW){
+        moveMotorDown();  // Turn CCW
+    } else {                                  
+        holdMotor();    // Don't move
+    }
+}
+
+// Reads a command sent from the debug monitor and reacts to it
+void reactToCommand(){
+    if (!COM_DEBUG.available()){
+        return;
     }
 
+    // Read first three letters/number and save to a string
+    for (int i = 0; i < 3; i++){
+        char incomingChar = COM_DEBUG.read();
+        message += incomingChar;
+    }
+
+    char firstChar = message.charAt(0);
+
+    // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
+    switch(firstChar) {
+        case 'M': 
+            goToDepthAndMeasure();
+            break;
+        case 'B':
+            measureBatteryStatus();
+            break;
+        case 'S':
+            measureSolarStatus();
+            break;
+        default:
+            break;
+    }
+}
+
+void goToDepthAndMeasure() {
+    // Extracts the number part of the message and converts to an int
+    String numericPart = message.substring(1);
+    int destinationDepth = numericPart.toInt();
+
+    // Variables to make code more readable
+    int upperLimit = destinationDepth + depthThreshold;
+    int lowerLimit = destinationDepth - depthThreshold;
+    bool insideTolerance = depth < upperLimit && depth > lowerLimit;
+
+    // if destination depth is not reached move in the right direction
+    if (depth > upperLimit && !insideTolerance){
+        moveMotorUp();
+    } else if (depth < lowerLimit && !insideTolerance){
+        moveMotorDown();
+    } else {
+        holdMotor();
+    }
+
+    if (insideTolerance){
+        COM_CANNISTER.println('M');
+    }
+}
+
+void moveMotorUp(){
+    digitalWrite(MOTOR_CW_PIN, LOW);
+    digitalWrite(MOTOR_CCW_PIN, HIGH);
+}
+
+void moveMotorDown(){
+    digitalWrite(MOTOR_CW_PIN, HIGH);
+    digitalWrite(MOTOR_CCW_PIN, LOW);
+}
+
+void holdMotor(){
+    digitalWrite(MOTOR_CW_PIN, LOW);
+    digitalWrite(MOTOR_CCW_PIN, LOW);
+}
+
+// Does nothing right now
+void measureBatteryStatus(){;}
+void measureSolarStatus(){;}
+
+void receiveFromUARTAndPrintToSDCard(){
     // Receives data from cannister via UART, separates it and prints on SD Card separated by comma.
     if (COM_CANNISTER.available()) {
-        
-        if (isAMessage){
-            // Converts message to C string with '\0' at end and writes to cannister
-            COM_CANNISTER.write(message.c_str()); 
-            delay(500);
-        }
-
         // Saves data received via UART from cannister to one long string
         String data = COM_CANNISTER.readStringUntil('\n');
+        
+        // Print data received to the debugger monitor
         COM_DEBUG.print("Received data: ");
         COM_DEBUG.println(data);
 
@@ -73,33 +149,5 @@ void loop() {
 
         // Print data to SD card
         printDataToSDCard(data);
-    }
-}
-
-void goToDepthAndMeasure() {
-    if (message.charAt(1) == '0') {
-        
-    }
-}
-
-void measureMotorPins(){
-    manualMode = digitalRead(MOTOR_SWITCH_AUT);
-    turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
-    turnMotorCW = digitalRead(MOTOR_BUTTON_RIGHT);
-}
-
-// Only call when manualMode is true. Turns motor according to motor buttons pressed
-void enableManualMode(){
-    if (!turnMotorCCW && turnMotorCW){
-        digitalWrite(MOTOR_CW_PIN, HIGH);
-        digitalWrite(MOTOR_CCW_PIN, LOW);
-
-    } else if (turnMotorCCW && !turnMotorCW){
-        digitalWrite(MOTOR_CW_PIN, LOW);
-        digitalWrite(MOTOR_CCW_PIN, HIGH);
-
-    } else {
-        digitalWrite(MOTOR_CW_PIN, LOW);
-        digitalWrite(MOTOR_CCW_PIN, LOW);
     }
 }

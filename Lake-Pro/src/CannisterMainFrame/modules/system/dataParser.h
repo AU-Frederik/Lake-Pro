@@ -38,7 +38,6 @@ void packageAndSendData() {
     dataString += String(outsideTemperature) + ';';
     dataString += String(CH4_sensorVolt) + ';';
     dataString += String(outsidePressure) + ';';
-    dataString += String(depth) + ';';
     dataString += String(CH4ppm) + ";";
 
     // Send string of sensor data with a new line
