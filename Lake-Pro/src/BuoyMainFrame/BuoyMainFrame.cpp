@@ -14,11 +14,12 @@ S: Check solar status
 
 void setup() {
     setupCommunication();
+    setupBrakeMotor();
     initAllPins();
     digitalWrite(CannisterON_Pin, HIGH);
     setUpSDCard();
 
-    // Make sure that Rotiny is shut off
+    // Make sure that Rotiny is shut off before starting
     holdMotor();
 }
 
@@ -36,4 +37,7 @@ void loop() {
 
     // Calculates the depth (change ref_pressure to buoy pressure)
     calculateDepth();
+    //brakeCable();
+    //unbrakeCable();
 }
+

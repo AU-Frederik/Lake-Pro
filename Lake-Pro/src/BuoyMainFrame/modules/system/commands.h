@@ -53,8 +53,10 @@ void goToDepthAndMeasure() {
 
     if (insideTolerance){
         COM_CANNISTER.println('M');
+        //brakeCable();
     } else {
         COM_CANNISTER.println('W');
+        //unbrakeCable();
     }
 }
 

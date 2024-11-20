@@ -15,3 +15,8 @@
 #define ref_pressure                101325  // Pa
 #define waterDensity                997     // kg/m^3
 #define g_acc                       9.80665 // m/s^2
+
+// Motor
+#define brakeRevolution             2
+#define stepsPrRevolution           3200
+#define stepsToBrake                brakeRevolution*stepsPrRevolution

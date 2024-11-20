@@ -32,7 +32,8 @@ void setup()
 void loop() 
 {
     // Read message received from buoy - if 'M' is received it starts measuring on all sensors
-    message = COM_BUOY.readStringUntil('\n');
+    //message = COM_BUOY.readStringUntil('\n');
+    message = 'M';
     COM_DEBUG.print("Received message: ");
     COM_DEBUG.println(message);
 

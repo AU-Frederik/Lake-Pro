@@ -28,16 +28,16 @@ void measureAll(){
     HP20_Measure(&pressure_HP20);
 
     // Measure temperature and humidity
-    DHT22_Measure(&humidity_DHT, &temperature_DHT);
+    //DHT22_Measure(&humidity_DHT, &temperature_DHT);
 
     // Measure outside temperature
-    outsideTemp_Measure(&outsideTemperature);
+    //outsideTemp_Measure(&outsideTemperature);
 
     // Measures pressure outside and calculates depth (inside the reference pressure can be calculated differently)
-    outsidePressure_Measure(&outsidePressure);
+    //outsidePressure_Measure(&outsidePressure);
 
     // Measure CH4
-    CH4_Measure(&CH4_sensorVolt);
+    //CH4_Measure(&CH4_sensorVolt);
 
     calculateAverageTempAndHumidity(&avg_Temperature, &avg_Humidity);
     convertCH4SensorToCH4ppm(&CH4ppm);

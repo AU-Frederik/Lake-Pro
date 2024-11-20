@@ -8,7 +8,7 @@ void initSensors(){
     dht.begin();
     
     // Initializes the outside temperature sensor
-    while (!outsideTempSensor.init()) {
+    /*while (!outsideTempSensor.init()) {
         COM_DEBUG.println("TSYS01 device failed to initialize!");
         delay(1000);
     }
