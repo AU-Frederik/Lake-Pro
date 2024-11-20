@@ -31,3 +31,6 @@ float CH4ppm;
 int manualMode;
 int turnMotorCCW;
 int turnMotorCW;
+
+// Commands
+String message;

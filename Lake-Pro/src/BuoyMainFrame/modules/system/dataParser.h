@@ -1,6 +1,26 @@
 #pragma once
 #include "../setup/modules.h"
 
+void calculateDepth(){
+    depth = (outsidePressure-ref_pressure)/(waterDensity*g_acc);
+}
+
+void receiveFromUARTAndPrintToSDCard(){
+    // Receives data from cannister via UART, separates it and prints on SD Card separated by comma.
+    if (COM_CANNISTER.available()) {
+        // Saves data received via UART from cannister to one long string
+        String data = COM_CANNISTER.readStringUntil('\n');
+        // Split data and add each data element to the global variables
+        parseDataFromCannister(data);
+
+        // Add timestamp to line on SD card
+        printTimeToSD();
+
+        // Print data to SD card
+        printDataToSDCard(data);
+    }
+}
+
 // Receives data from cannister via UART, separates it and prints on SD Card separated by comma. 
 void parseDataFromCannister(String data) {
     int startIndex = 0;

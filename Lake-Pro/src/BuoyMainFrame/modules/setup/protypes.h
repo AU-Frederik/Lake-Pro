@@ -2,7 +2,7 @@
 #include "modules.h"
 
 // Function declaration
-void parseDataFromCannister();
+void parseDataFromCannister(String);
 void setRTCTimeFromSerialInput();
 void showRTCTimeSettings();
 void inputDateFromSerial();
@@ -19,3 +19,4 @@ void measureSolarStatus();
 void moveMotorUp();
 void moveMotorDown();
 void holdMotor();
+void calculateDepth();

@@ -21,3 +21,5 @@
 #include "../system/rtc.h"
 #include "../system/sd.h"
 #include "../system/dataParser.h"
+#include "../system/motorControl.h"
+#include "../system/commands.h"
