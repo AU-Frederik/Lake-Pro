@@ -39,6 +39,7 @@ void packageAndSendData() {
     dataString += String(outsidePressure) + ';';
     dataString += String(CH4_sensorVolt) + ';';
     dataString += String(CH4ppm) + ";";
+    dataString += String(oxygenLevel) + ";";
 
     // Send string of sensor data with a new line
     COM_BUOY.println(dataString);

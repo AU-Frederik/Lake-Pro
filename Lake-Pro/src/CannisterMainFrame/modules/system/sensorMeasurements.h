@@ -28,19 +28,27 @@ void measureAll(){
     HP20_Measure(&pressure_HP20);
 
     // Measure temperature and humidity
-    //DHT22_Measure(&humidity_DHT, &temperature_DHT);
+    DHT22_Measure(&humidity_DHT, &temperature_DHT);
 
     // Measure outside temperature
-    //outsideTemp_Measure(&outsideTemperature);
+    outsideTemp_Measure(&outsideTemperature);
 
     // Measures pressure outside and calculates depth (inside the reference pressure can be calculated differently)
-    //outsidePressure_Measure(&outsidePressure);
-
-    // Measure CH4
-    //CH4_Measure(&CH4_sensorVolt);
+    outsidePressure_Measure(&outsidePressure);
 
     calculateAverageTempAndHumidity(&avg_Temperature, &avg_Humidity);
-    convertCH4SensorToCH4ppm(&CH4ppm);
+
+    // Measures oxygen using FD02
+    oxygen_Measure(&oxygenLevel);
+
+    // Measure CH4 if over 127 hPa as this is 16% oxygen, which is needed for combustion
+    if (oxygenLevel > 127) { 
+        CH4_Measure(&CH4_sensorVolt);
+        convertCH4SensorToCH4ppm(&CH4ppm);
+    } else {
+        CH4_sensorVolt = 0;
+        CH4ppm = 0;
+    }
 }
 
 // Measures CO2, temperature and humidity on the SCD30 sensor
@@ -98,5 +106,31 @@ void outsidePressure_Measure(float* pressure) {
     *pressure = outsidePressureSensor.pressure();
 }
 
+// Measures the oxygen level using FD02 with UART
+void oxygen_Measure(float *oxygen){
+    const char command[] = "#MOXY\r"; // Command as raw bytes
+    // Send the command byte by byte for full control
+    for (size_t i = 0; i < sizeof(command) - 1; i++) {
+        COM_FD02.write(command[i]); // Send byte to Serial2
+    }
+
+    // Receives response in a string ala "#MOXY 202000 303030 1"
+    String response = "";
+    while (COM_FD02.available()) {
+      char incomingChar = Serial2.read();
+      response += incomingChar;
+    }
+
+    // Parses the string and removes the first number, as this is oxygen partial pressure
+    if (response.length() > 0) {
+        if (response.startsWith("#MOXY")) {
+        // Extract values
+        int space1 = response.indexOf(' ', 6); // Find first space after "#MOXY"
+        *oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
+        } else {
+            Serial.println("Invalid response format.");
+        }
+    }
+}
 
 

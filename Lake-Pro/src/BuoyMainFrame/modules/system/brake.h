@@ -10,9 +10,10 @@ void setupBrakeMotor(){
     stepper.setAcceleration(motorAccel);
 }
 
+// Turns on the brake motor, sets direction to DOWN on the lead screw and moves steps
 void brakeCable(){
     turnOnBrakeMotor();
-    setMotorDirection(1);
+    setMotorDirection(0);
     stepper.moveTo(stepsToBrake); // 1 rev = 3200
     while (stepper.currentPosition() != stepsToBrake){
         stepper.run();
@@ -21,9 +22,10 @@ void brakeCable(){
     shutOfBrakeMotor();
 }
 
+// Turns on the brake motor, sets direction to UP on the lead screw and moves steps
 void unbrakeCable(){
     turnOnBrakeMotor();
-    setMotorDirection(0);
+    setMotorDirection(1);
     stepper.moveTo(stepsToBrake); // 1 rev = 3200
     while (stepper.currentPosition() != stepsToBrake){
         stepper.run();
@@ -40,6 +42,7 @@ void shutOfBrakeMotor(){
     digitalWrite(MOTOR_SLEEP_PIN, LOW);
 }
 
+// 1 means moving down on the lead screw or else it moves up
 void setMotorDirection(int dir){
     if (dir == 1){
         digitalWrite(MOTOR_DIR_PIN, HIGH);

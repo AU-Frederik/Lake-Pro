@@ -14,6 +14,7 @@ float CH4_sensorVolt;
 float outsideTemperature;
 float outsidePressure;
 float CH4ppm;
+float oxygenLevel;
 unsigned long myTime;
 String dataString;
 String message;

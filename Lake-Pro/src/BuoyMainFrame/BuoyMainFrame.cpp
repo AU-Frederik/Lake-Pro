@@ -37,7 +37,7 @@ void loop() {
 
     // Calculates the depth (change ref_pressure to buoy pressure)
     calculateDepth();
-    //brakeCable();
-    //unbrakeCable();
+    brakeCable();
+    unbrakeCable();
 }
 

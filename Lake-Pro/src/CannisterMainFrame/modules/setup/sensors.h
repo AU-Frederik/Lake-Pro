@@ -1,7 +1,7 @@
 #pragma once
 #include "modules.h"
 
-void initSensors(){
+void    initSensors(){
     // Initialize HP20x, SCD30 and DHT22 sensors
     HP20x.begin();
     scd30.initialize();
@@ -21,7 +21,7 @@ void initSensors(){
     ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV  0.1875mV (default)
 
     // Initiliazes BAR100 - outside pressure sensor and sets fluid density
-    /*outsidePressureSensor.init();
+    outsidePressureSensor.init();
     while (!outsidePressureSensor.isInitialized()) {
         COM_DEBUG.println("BAR100 device failed to initialize! Trying again...");
         outsidePressureSensor.init();
