@@ -9,26 +9,79 @@ void setup() {
     initAllPins();
 }
 
+// Each loop the sensors are read and the yaw and pitch motors move towards the sun.
 void loop() {
+    calibratePosition();
+}
+
+
+/**
+ * @brief Follows the sun according to a difference of LDR values using pitch and yaw motors.
+ * 
+ */
+void calibratePosition() {
     readLDRSensors();
-    formatOutput();
-}
+    
+    bool yawCalibrated   = true;
+    bool pitchCalibrated = true;
+    int yawDifference    = LDR_WEST_VALUE - LDR_EAST_VALUE;   // Positve if East is biased
+    int pitchDifference  = LDR_NORTH_VALUE - LDR_SOUTH_VALUE; // Positive if North is biased
 
+    // Checks if yaw or pitch needs to be calibrated = moved towards the sun
+    if (abs(yawDifference)   > beginLimit) {yawCalibrated   = false;}
+    if (abs(pitchDifference) > beginLimit) {pitchCalibrated = false;}
 
-// Functions
-void readLDRSensors() {
-    LDR_NORTH_VALUE = analogRead(LDR_NORTH_PIN);
-    LDR_SOUTH_VALUE = analogRead(LDR_SOUTH_PIN);
-    LDR_EAST_VALUE = analogRead(LDR_EAST_PIN);
-    LDR_WEST_VALUE = analogRead(LDR_WEST_PIN);
-}
+    // Do nothing if everything is already calibrated.
+    if (yawCalibrated && pitchCalibrated){return;}
 
-void formatOutput() {
-    COM_DEBUG.print("Difference between North and south values are: ");
-    COM_DEBUG.println(LDR_NORTH_VALUE-LDR_SOUTH_VALUE);
+    // Each iteration the LDR sensor data is read and the difference is calculated.
+    // From this difference a series of actions are done to calibrate.
+    // Loop stops when both are calibrated. 
+    // The motor will only move when difference is over a threshold.
+    while(true) {
+        readLDRSensors();
+        yawDifference    = LDR_WEST_VALUE - LDR_EAST_VALUE;
+        pitchDifference  = LDR_NORTH_VALUE - LDR_SOUTH_VALUE;
 
-    COM_DEBUG.print("Difference between East and West values are: ");
-    COM_DEBUG.println(LDR_EAST_VALUE-LDR_WEST_VALUE);
+        if (abs(yawDifference)   > beginLimit) {yawCalibrated   = false;}
+        if (abs(pitchDifference) > beginLimit) {pitchCalibrated = false;}
 
-    COM_DEBUG.println("");
+        if (!yawCalibrated) {
+            
+            if (abs(yawDifference) < stopLimit) {
+                COM_DEBUG.println("Turning Yaw off");
+                turnYawOff();
+                yawCalibrated = true;
+            }
+
+            else if (yawDifference > 0) {
+                COM_DEBUG.println("Turning Yaw CW");
+                turnYawCW();
+            }
+        
+            else if (yawDifference < 0) {
+                COM_DEBUG.println("Turning Yaw CCW");
+                turnYawCCW();
+            }
+        }
+
+        if (!pitchCalibrated) {
+            if (abs(pitchDifference) < stopLimit) {
+                COM_DEBUG.println("Turning pitch off");
+                turnPitchOff();
+                pitchCalibrated = true;
+            }
+            else if (pitchDifference > 0) {
+                COM_DEBUG.println("Turning pitch up");
+                turnPitchUp();
+            }
+        
+            else if (pitchDifference < 0) {
+                COM_DEBUG.println("Turning pitch down");
+                turnPitchDown();
+            }
+        }
+        if (yawCalibrated && pitchCalibrated){break;}
+    }
+
 }

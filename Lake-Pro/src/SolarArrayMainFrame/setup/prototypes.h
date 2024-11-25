@@ -1,16 +1,19 @@
 #pragma once
 #include "modules.h"
 
-// Movements
+// LDR sensors
 void readLDRSensors();
-void formatOutput();
+void outputLDRValues();
 
-// DC
+// Yaw/DC motor
 void turnYawCW();
 void turnYawCCW();
 void turnYawOff();
 
-// rotiny
+// Rotiny/Pitch motor
 void turnPitchUp();
 void turnPitchDown();
-void turnPitcOff();
+void turnPitchOff();
+
+// Calibration
+void calibratePosition();

@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "pinmode.h"
 
-
 // System files
 #include "../system/yawMotor.h"
+#include "../system/pitchMotor.h"
+#include "../system/ldr.h"
