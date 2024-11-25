@@ -1,7 +1,10 @@
 #pragma once
 #include "../setup/modules.h"
 
-// Reads a command sent from the debug monitor and reacts to it
+/**
+ * @brief Delegates to other function depending on what command was called.
+ * 
+ */
 void reactToCommand(){
     // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
     if (message.startsWith("M") && message.length() == 3){
@@ -18,6 +21,11 @@ void reactToCommand(){
     }
 }
 
+/**
+ * @brief Extracts the destination depth from the command and moves the cable motor depending on the depth now.
+ * When inside the tolerance a message is sent to the cannister to start measuring.
+ * 
+ */
 void goToDepthAndMeasure() {
     // Extracts the number part of the message and converts to an int
     String numericPart = message.substring(1);
@@ -28,18 +36,19 @@ void goToDepthAndMeasure() {
     int lowerLimit = destinationDepth - depthThreshold;
     bool insideTolerance = depth < upperLimit && depth > lowerLimit;
 
-    // if destination depth is not reached move in the right direction
+    // If destination depth is not reached move in the correct direction
     if (depth > upperLimit && !insideTolerance){
-        moveMotorUp();
+        moveCableMotorUp();
         COM_DEBUG.println("Outside tolerance - moving up");
     } else if (depth < lowerLimit && !insideTolerance){
-        moveMotorDown();
+        moveCableMotorDown();
         COM_DEBUG.println("Outside tolerance - moving down");
     } else {
-        holdMotor();
+        turnOffCableMotor();
         COM_DEBUG.println("Dont know what depth to go to...");
     }
 
+    // If destination depth is reached the cannister is told to start measuring.
     if (insideTolerance){
         COM_CANNISTER.println('M');
         COM_DEBUG.println("Inside tolerance - sending 'M' to cannister");
@@ -49,6 +58,15 @@ void goToDepthAndMeasure() {
     }
 }
 
-// Does nothing right now
+/**
+ * @brief Does nothing right now.
+ * 
+ */
 void measureBatteryStatus(){;}
+
+
+/**
+ * @brief Does nothing right now.
+ * 
+ */
 void measureSolarStatus(){;}

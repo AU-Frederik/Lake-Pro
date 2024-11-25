@@ -1,42 +1,59 @@
 #pragma once
 #include "../setup/modules.h"
 
-// Sets MOTOR_DOWN_PIN to LOW and MOTOR_UP_PIN to HIGH
-void moveMotorUp(){
+/**
+ * @brief Moves the cannister up in the water.
+ * 
+ */
+void moveCableMotorUp(){
     digitalWrite(MOTOR_DOWN_PIN, LOW);
     digitalWrite(MOTOR_UP_PIN, HIGH);
 }
 
-// Sets MOTOR_DOWN_PIN to HIGH and MOTOR_UP_PIN to LOW
-void moveMotorDown(){
+
+/**
+ * @brief Moves the cannister down in the water.
+ * 
+ */
+void moveCableMotorDown(){
     digitalWrite(MOTOR_DOWN_PIN, HIGH);
     digitalWrite(MOTOR_UP_PIN, LOW);
 }
 
-// Sets Rotiny motor pins to low
-void holdMotor(){
+/**
+ * @brief Turns off the cable motor.
+ * 
+ */
+void turnOffCableMotor(){
     digitalWrite(MOTOR_DOWN_PIN, LOW);
     digitalWrite(MOTOR_UP_PIN, LOW);
 }
 
-// Measures the three pins of the manual buttons
+/**
+ * @brief Measures the three manual buttons on the winch.
+ * 
+ */
 void measureMotorPins(){
     manualMode   = digitalRead(MOTOR_SWITCH_AUT);
     turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
     turnMotorCW  = digitalRead(MOTOR_BUTTON_RIGHT);
 }
 
-// Only call when manualMode is true. Turns motor according to motor buttons pressed
+
+/**
+ * @brief Only call when manualMode is true. Turns motor according to motor buttons pressed.
+ * 
+ */
 void enableManualMode(){
     COM_DEBUG.println("Enabling manual mode...");
     if (!turnMotorCCW && turnMotorCW){
         COM_DEBUG.println("Moving cable up manually.");
-        moveMotorUp(); // Turn CW
+        moveCableMotorUp(); // Turn CW
     } else if (turnMotorCCW && !turnMotorCW){
         COM_DEBUG.println("Moving cable down manually.");
-        moveMotorDown();  // Turn CCW
+        moveCableMotorDown();  // Turn CCW
     } else {                                  
-        holdMotor();    // Don't move
+        turnOffCableMotor();    // Don't move
     }
 }
 

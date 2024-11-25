@@ -1,10 +1,19 @@
 #pragma once
 #include "../setup/modules.h"
 
+/**
+ * @brief Calculates the depth from the reference pressure measured vs. 
+ * the pressure outside the cannister under water.
+ * 
+ */
 void calculateDepth(){
     depth = (outsidePressure-referencePressure)/(waterDensity*g_acc);
 }
 
+/**
+ * @brief Reads a String from the cannister, splits the data to into variables and prints the time + data to the SD card.
+ * 
+ */
 void receiveFromUARTAndPrintToSDCard(){
     // Receives data from cannister via UART, separates it and prints on SD Card separated by comma.
     if (COM_CANNISTER.available()) {
@@ -24,7 +33,10 @@ void receiveFromUARTAndPrintToSDCard(){
     }
 }
 
-// Receives data from cannister via UART, separates it and prints on SD Card separated by comma. 
+/**
+ * @brief Splits the data string received over UART from the cannister to the different global variables.
+ * @param data a String with each sensor data separated by a semicolon.
+ */
 void parseDataFromCannister(String data) {
     int startIndex = 0;
     int endIndex = data.indexOf(";", startIndex);
@@ -32,6 +44,7 @@ void parseDataFromCannister(String data) {
     floatCount = 0;
     int len_data = (int) data.length();
     
+    // Splits the data into a float array, as each data is separated with a semicolon when received.
     while (endIndex != -1 && floatCount < maxFloats) {
         String token = data.substring(startIndex, endIndex); // saves next number as token, seperatered by ";"
         receivedNumbers[floatCount] = token.toFloat();
@@ -41,7 +54,6 @@ void parseDataFromCannister(String data) {
         if (startIndex > len_data) break; // To prevent "out of array bounds"
     }
     
-
     // After having split the numbers, each is saved to the global variables
     co2_SCD             = receivedNumbers[0];
     avg_Humidity        = receivedNumbers[1];
@@ -54,23 +66,20 @@ void parseDataFromCannister(String data) {
 
     // Print data received to the debugger monitor
     COM_DEBUG.println("CO2   HUMIDITY   TEMPERATURE INSIDE   PRESSURE INSIDE   TEMPERATURE OUTSIDE   PRESSURE OUTSIDE   CH4 SENSORVOLT   CH4 PPM");
-    COM_DEBUG.print(co2_SCD);
-    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(avg_Humidity);
-    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(avg_Temperature);
-    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(pressure_HP20);
-    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(outsideTemperature);
-    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(outsidePressure);
-    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(CH4_sensorVolt);
-    COM_DEBUG.print("\t \t");
+    COM_DEBUG.print(co2_SCD);               COM_DEBUG.print("\t \t");
+    COM_DEBUG.print(avg_Humidity);          COM_DEBUG.print("\t \t");
+    COM_DEBUG.print(avg_Temperature);       COM_DEBUG.print("\t \t");
+    COM_DEBUG.print(pressure_HP20);         COM_DEBUG.print("\t \t");
+    COM_DEBUG.print(outsideTemperature);    COM_DEBUG.print("\t \t");
+    COM_DEBUG.print(outsidePressure);       COM_DEBUG.print("\t \t"); 
+    COM_DEBUG.print(CH4_sensorVolt);        COM_DEBUG.print("\t \t");
     COM_DEBUG.println(CH4ppm);
 }
 
+/**
+ * @brief Sends the data over LoRa by first converting to a command with hexidecimals
+ * @param data a String with each sensor data separated by a semicolon.
+ */
 void sendDataOverLora(String data){
     // Send back the dataString
     String command = "AT+CMSGHEX=\"" + stringToHex(data) + "\"\r\n";
@@ -80,8 +89,6 @@ void sendDataOverLora(String data){
         COM_DEBUG.println("Failed to send data string.");
     }
 }
-
-
 
 /**
  * @brief Converts a string to its hexadecimal representation.

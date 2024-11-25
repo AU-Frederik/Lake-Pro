@@ -1,15 +1,19 @@
 #pragma once
 #include "../setup/modules.h"
 
+/**
+ * @brief Sets max speed and acceleration of the brake motor.
+ * 
+ */
 void setupBrakeMotor(){
-    uint32_t motorSpeed   = 3200; // maximum steps per second (about 3rps / at 16 microsteps)
-    uint32_t motorAccel   = 82000; // steps/second/second to accelerate
-
     stepper.setMaxSpeed(motorSpeed);
-    stepper.setAcceleration(motorAccel);
+    stepper.setAcceleration(motorAcceleration);
 }
 
-// Turns on the brake motor, sets direction to DOWN on the lead screw and moves steps
+/**
+ * @brief Turns on the brake motor, brakes the cable if the cable is not already braked and shuts it off again.
+ * 
+ */
 void brakeCable() {
     if (isCableBraked) return;
     turnOnBrakeMotor();
@@ -24,7 +28,10 @@ void brakeCable() {
     isCableBraked = true;
 }
 
-// Turns on the brake motor, sets direction to UP on the lead screw and moves steps
+/**
+ * @brief Turns on the brake motor, unbrakes the cable if the cable is braked and shuts it off again.
+ * 
+ */
 void unbrakeCable() {
     if (!isCableBraked) return;
     turnOnBrakeMotor();
@@ -39,10 +46,18 @@ void unbrakeCable() {
     isCableBraked = false;
 }
 
+/**
+ * @brief Turns on the brake motor.
+ * 
+ */
 void turnOnBrakeMotor(){
     digitalWrite(MOTOR_SLEEP_PIN, HIGH);
 }
 
+/**
+ * @brief Shuts off the brake motor.
+ * 
+ */
 void shutOffBrakeMotor(){
     digitalWrite(MOTOR_SLEEP_PIN, LOW);
 }

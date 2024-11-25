@@ -9,6 +9,7 @@ MXX: Go to XX meters and start measuring. XX = 01-99
 B: Check battery status
 S: Check solar status
 */
+
 #include "./setup/modules.h"
 
 void setup() {
@@ -20,7 +21,7 @@ void setup() {
     setUpSDCard();
 
     // Make sure that Rotiny is shut off before starting
-    holdMotor();
+    turnOffCableMotor();
 }
 
 void loop() {

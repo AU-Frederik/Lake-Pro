@@ -1,7 +1,8 @@
 #pragma once
 #include "modules.h"
 
-#define CSPin                   53    // Chip select for SD card
+// Chip select for SD card
+#define CSPin                   53
 
 // Motor pins for Rotiny moving the winch
 #define MOTOR_DOWN_PIN          10

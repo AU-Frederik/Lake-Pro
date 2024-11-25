@@ -31,6 +31,7 @@ bool sendCommandAndReceiveResponse(const String &command, const char *expectedRe
 
 /**
  * @brief Initializes the E5 module and configures settings.
+ * @return True if the module was configured succesfully, false otherwise.
  */
 bool LoRaConfigure() {
   // LWOTAA (Over the Air Activation), LWABP (Activation By Personalization)

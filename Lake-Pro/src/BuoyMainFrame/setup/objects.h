@@ -7,10 +7,8 @@ DS3231 myRTC;
 // File to save to on SD card
 File myFile;
 
-// Stepper motor for brake
-// set up the accelStepper intance
-// the "1" tells it we are using a driver
-//AccelStepper stepper(1, MOTOR_STEP_PIN, MOTOR_DIR_PIN);
+// set up the accelStepper instance. The "1" tells it, that we are using a driver
 AccelStepper stepper(1, MOTOR_STEP_PIN, MOTOR_DIR_PIN);
 
-KalmanFilter      p_filter;
+// Used to filter reference pressure sensor data
+KalmanFilter p_filter;

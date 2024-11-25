@@ -1,7 +1,44 @@
 #pragma once
 #include "../setup/modules.h"
 
-// This function is written by Eric Ayars, who made the library used ("DS3231.h")
+
+/**
+ * @brief Adds a timestamp to a line on the SD card.
+ * 
+ */
+void printTimeToSD() {
+    myFile = SD.open(SENSOR_DATA_FILENAME, FILE_WRITE);
+    if (myFile) {
+      myFile.print(myRTC.getYear(), DEC);
+      myFile.print("-");
+      myFile.print(myRTC.getMonth(century), DEC);
+      myFile.print("-");
+      myFile.print(myRTC.getDate(), DEC);
+      myFile.print(" ");
+      myFile.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
+      myFile.print(":");
+      myFile.print(myRTC.getMinute(), DEC);
+      myFile.print(": ");
+      myFile.print(myRTC.getSecond(), DEC);
+      myFile.print(" ; ");
+    } else {
+      COM_DEBUG.println("Error at opening SD file for adding RTC time.");
+    }
+    myFile.close();
+}
+
+
+/*----------------------------------------------------------------------------------------------------*/
+/*                                                                                                    */
+/*          FUNCTIONS TO SET TIME ON RTC. NOT USED IN PROJECT. LEFT FOR FUTURE USE.                   */  
+/*                                                                                                    */
+/*----------------------------------------------------------------------------------------------------*/
+
+/**
+ * @brief Shows the settings configuring the time. Used in combination with inputDateFromSerial().
+ * This function is written by Eric Ayars, who made the library used ("DS3231.h")
+ * 
+ */
 void showRTCTimeSettings(){
   // Request the time correction on the Serial
   delay(1000);
@@ -18,7 +55,11 @@ void showRTCTimeSettings(){
   COM_DEBUG.println("Please enter the current time to set on DS3231 ended by 'x':");
 }
 
-// This function is written by Eric Ayars, who made the library used ("DS3231.h")
+/**
+ * @brief Sets time from the Serial monitor.
+ * This function is written by Eric Ayars, who made the library used ("DS3231.h").
+ * 
+ */
 void setRTCTimeFromSerialInput() {
   // If something is coming in on the serial line, it's
   // a time correction so set the clock accordingly.
@@ -57,43 +98,11 @@ void setRTCTimeFromSerialInput() {
   delay(1000);
 }
 
-void printTime() {
-    COM_DEBUG.print(myRTC.getYear(), DEC);
-    COM_DEBUG.print("-");
-    COM_DEBUG.print(myRTC.getMonth(century), DEC);
-    COM_DEBUG.print("-");
-    COM_DEBUG.print(myRTC.getDate(), DEC);
-    COM_DEBUG.print(" ");
-    COM_DEBUG.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
-    COM_DEBUG.print(":");
-    COM_DEBUG.print(myRTC.getMinute(), DEC);
-    COM_DEBUG.print(":");
-    COM_DEBUG.println(myRTC.getSecond(), DEC);
-}
-
-void printTimeToSD() {
-    myFile = SD.open(SENSOR_DATA_FILENAME, FILE_WRITE);
-    if (myFile) {
-      myFile.print(myRTC.getYear(), DEC);
-      myFile.print("-");
-      myFile.print(myRTC.getMonth(century), DEC);
-      myFile.print("-");
-      myFile.print(myRTC.getDate(), DEC);
-      myFile.print(" ");
-      myFile.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
-      myFile.print(":");
-      myFile.print(myRTC.getMinute(), DEC);
-      myFile.print(": ");
-      myFile.print(myRTC.getSecond(), DEC);
-      myFile.print(" ; ");
-    } else {
-      COM_DEBUG.println("Error at opening SD file for adding RTC time.");
-    }
-    myFile.close();
-}
-
-
-// This function is written by Eric Ayars, who made the library used ("DS3231.h")
+/**
+ * @brief Configures the time. Used in combination with showRTCTimeSettings().
+ * This function is written by Eric Ayars, who made the library used ("DS3231.h")
+ * 
+ */
 void inputDateFromSerial() {
 	// Call this if you notice something coming in on
 	// the serial port. The stuff coming in should be in

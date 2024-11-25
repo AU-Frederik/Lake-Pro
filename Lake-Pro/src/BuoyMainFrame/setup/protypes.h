@@ -3,32 +3,48 @@
 
 // Function declaration
 void parseDataFromCannister(String);
-void setRTCTimeFromSerialInput();
-void showRTCTimeSettings();
-void inputDateFromSerial();
-void printTime();
-void printDataToSDCard(String);
-void setUpSDCard();
+
+// Data parsing
+void receiveFromUARTAndPrintToSDCard();
+
+// Control
 void goToDepthAndMeasure();
-void measureMotorPins();
 void enableManualMode();
 void reactToCommand();
-void receiveFromUARTAndPrintToSDCard();
-void measureBatteryStatus();
-void measureSolarStatus();
-void moveMotorUp();
-void moveMotorDown();
-void holdMotor();
-void calculateDepth();
+
+// Motors
+void measureMotorPins();
+void moveCableMotorUp();
+void moveCableMotorDown();
+void turnOffCableMotor();
 void setupBrakeMotor();
 void brakeCable();
 void unbrakeCable();
 void shutOffBrakeMotor();
 void turnOnBrakeMotor();
-void setMotorDirection(int);
-void turnOnCannister();
+
+// LoRa
 bool sendCommandAndReceiveResponse(const String &command, const char *expectedResponse = "OK", unsigned long timeout = 2000);
 bool LoRaConfigure();
 String stringToHex(const String&);
+
+// Pressure sensor
 void measureRefPressure(float*);
 void setupPressureSensor();
+
+// RTC
+void setRTCTimeFromSerialInput();
+void showRTCTimeSettings();
+void inputDateFromSerial();
+
+// SD
+void printDataToSDCard(String);
+void setUpSDCard();
+
+// Battery & Solar
+void measureBatteryStatus();
+void measureSolarStatus();
+
+// General
+void calculateDepth();
+void turnOnCannister();

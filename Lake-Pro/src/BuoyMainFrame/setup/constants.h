@@ -24,7 +24,9 @@
 #define waterDensity                997     // kg/m^3
 #define g_acc                       9.80665 // m/s^2
 
-// Motor
+// Brake motor
 #define brakeRevolution             1
 #define stepsPrRevolution           3200
 #define stepsToBrake                brakeRevolution*stepsPrRevolution
+#define motorSpeed                  3200
+#define motorAcceleration           82000
