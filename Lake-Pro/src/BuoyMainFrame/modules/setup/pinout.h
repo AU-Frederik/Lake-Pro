@@ -1,8 +1,6 @@
 #pragma once
 #include "modules.h"
 
-#define rxPin                   2     // Receives UART
-#define txPin                   3     // Transmits UART
 #define CSPin                   53    // Chip select for SD card
 
 // Motor pins for Rotiny moving the winch
@@ -17,5 +15,5 @@
 
 // Motor pins for Brake stepper motor
 #define MOTOR_STEP_PIN          2
-#define MOTOR_DIR_PIN           18
-#define MOTOR_SLEEP_PIN         19
+#define MOTOR_DIR_PIN           19
+#define MOTOR_SLEEP_PIN         18

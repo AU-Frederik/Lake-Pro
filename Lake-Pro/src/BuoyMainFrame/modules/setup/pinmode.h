@@ -15,10 +15,11 @@ void initAllPins(){
     pinMode(MOTOR_BUTTON_RIGHT, INPUT_PULLUP);
     pinMode(MOTOR_BUTTON_LEFT,  INPUT_PULLUP);
 
+    //pinMode(MOTOR_DIR_PIN, OUTPUT);
+    //pinMode(MOTOR_STEP_PIN, OUTPUT);
+
     // Stepper motor for brake
-    pinMode(MOTOR_DIR_PIN, OUTPUT);
     pinMode(MOTOR_SLEEP_PIN,  OUTPUT);
-    pinMode(MOTOR_STEP_PIN,  OUTPUT);
 }
 
 void turnOnCannister(){

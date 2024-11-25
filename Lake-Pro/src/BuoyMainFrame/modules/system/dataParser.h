@@ -2,7 +2,7 @@
 #include "../setup/modules.h"
 
 void calculateDepth(){
-    depth = (outsidePressure-ref_pressure)/(waterDensity*g_acc);
+    depth = (outsidePressure-referencePressure)/(waterDensity*g_acc);
 }
 
 void receiveFromUARTAndPrintToSDCard(){
@@ -11,12 +11,15 @@ void receiveFromUARTAndPrintToSDCard(){
         // Saves data received via UART from cannister to one long string
         dataString = COM_CANNISTER.readStringUntil('\n');
         // Split data and add each data element to the global variables
+        COM_DEBUG.println("Parses data from cannister...");
         parseDataFromCannister(dataString);
 
         // Add timestamp to line on SD card
+        COM_DEBUG.println("Prints time to SD...");
         printTimeToSD();
 
         // Print data to SD card
+        COM_DEBUG.println("Prints data and time to SD card...");
         printDataToSDCard(dataString);
     }
 }

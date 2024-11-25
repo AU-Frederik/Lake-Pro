@@ -32,10 +32,14 @@ String dataString;
 int manualMode;
 int turnMotorCCW;
 int turnMotorCW;
+bool isCableBraked = true;
 
 // Commands
 String message;
 
 /* LORA */
-static bool networkJoined = false;  // Flag indicating if the network is joined
+//static bool networkJoined = false;  // Flag indicating if the network is joined
+
+
+float referencePressure;
 

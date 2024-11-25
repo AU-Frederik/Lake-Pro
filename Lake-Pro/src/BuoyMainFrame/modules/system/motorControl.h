@@ -28,9 +28,12 @@ void measureMotorPins(){
 
 // Only call when manualMode is true. Turns motor according to motor buttons pressed
 void enableManualMode(){
-    if (!turnMotorCCW && turnMotorCW){ 
+    COM_DEBUG.println("Enabling manual mode...");
+    if (!turnMotorCCW && turnMotorCW){
+        COM_DEBUG.println("Moving cable up manually.");
         moveMotorUp(); // Turn CW
     } else if (turnMotorCCW && !turnMotorCW){
+        COM_DEBUG.println("Moving cable down manually.");
         moveMotorDown();  // Turn CCW
     } else {                                  
         holdMotor();    // Don't move
