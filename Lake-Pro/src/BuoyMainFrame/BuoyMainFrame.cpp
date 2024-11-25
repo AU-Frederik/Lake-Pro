@@ -9,7 +9,7 @@ MXX: Go to XX meters and start measuring. XX = 01-99
 B: Check battery status
 S: Check solar status
 */
-#include "./modules/setup/modules.h"
+#include "./setup/modules.h"
 
 void setup() {
     turnOnCannister();

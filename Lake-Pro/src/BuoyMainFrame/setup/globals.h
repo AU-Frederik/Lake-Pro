@@ -15,3 +15,31 @@ byte dow;
 byte hour;
 byte minute;
 byte second;
+
+// From cannister
+float co2_SCD;
+float avg_Humidity;
+float avg_Temperature;
+float pressure_HP20;
+float outsideTemperature;
+float CH4_sensorVolt;
+float outsidePressure;
+float depth;
+float CH4ppm;
+String dataString;
+
+// Motor pins
+int manualMode;
+int turnMotorCCW;
+int turnMotorCW;
+bool isCableBraked = true;
+
+// Commands
+String message;
+
+/* LORA */
+//static bool networkJoined = false;  // Flag indicating if the network is joined
+
+
+float referencePressure;
+
