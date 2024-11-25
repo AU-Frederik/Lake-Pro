@@ -28,8 +28,14 @@ int LDR_WEST_VALUE;
 const int rotinyCCW = A0;
 const int rotinyCW = A1;
 
+// Threshholds
+const int beginThreshhold = 50;
+const int stopThreshhold = 5;
+
+
 void checkSun();
 void formatOutput();
+void calibratePosistion();
 
 // DC
 void turnMotorClockWise();
@@ -39,7 +45,7 @@ void turnMotorOff();
 // rotiny
 void turnPitchUp();
 void turnPitchDown();
-void turnPitcOff();
+void turnPitchOff();
 
 void setup() {
     Serial.begin(9600);
@@ -63,25 +69,59 @@ void setup() {
 
 void loop() {
 
-    checkSun();
-    formatOutput();
 
-    //demo start
-    turnMotorClockWise();
-    delay(1000);
-    turnMotorOff();
-    delay(1000);
-    turnMotorCounterClockWise();
-    delay(1000);
-    turnMotorOff();
-    delay(1000);
-
-    delay(1000);
+    
     
 }
 
 
-// METHODS (Functions?)
+// Functions
+
+void calibratePosistion() {
+    checkSun();
+    
+    bool yawCalibrated = true;
+    bool pitchCalibrated = true;
+
+    if (abs(LDR_EAST_VALUE - LDR_WEST_VALUE) > beginThreshhold) {yawCalibrated = false;}
+    if (abs(LDR_NORTH_VALUE - LDR_SOUTH_VALUE) > beginThreshhold) {pitchCalibrated = false;}
+
+    if ((yawCalibrated = true)&&(pitchCalibrated = true)){return;}
+
+    while(true) {
+        if (yawCalibrated == false) {
+            
+            if (abs(LDR_EAST_VALUE - LDR_WEST_VALUE) < stopThreshhold) {
+                turnMotorOff();
+                yawCalibrated = true;
+                }
+            else if (LDR_EAST_VALUE > LDR_WEST_VALUE) {
+                turnMotorClockWise();
+            }
+        
+            else if (LDR_EAST_VALUE < LDR_WEST_VALUE) {
+                turnMotorCounterClockWise();
+            }
+        }
+
+        if (pitchCalibrated == false) {
+            if (abs(LDR_NORTH_VALUE - LDR_SOUTH_VALUE) < stopThreshhold) {
+                turnPitchOff();
+                pitchCalibrated = true;
+                }
+            else if (LDR_NORTH_VALUE > LDR_SOUTH_VALUE) {
+                turnPitchUp();
+            }
+        
+            else if (LDR_NORTH_VALUE < LDR_SOUTH_VALUE) {
+                turnPitchDown();
+            }
+        }
+        if ((yawCalibrated = true)&&(pitchCalibrated = true)){break;}
+    }
+
+}
+
 void checkSun() {
     LDR_NORTH_VALUE = analogRead(LDR_NORTH_PIN);
     LDR_SOUTH_VALUE = analogRead(LDR_SOUTH_PIN);
