@@ -5,30 +5,41 @@
 #include <Arduino.h>
 
 // Motor and H-bridge constants
-const int enablePin = 3; //Needs to support PWM channel
-const int control_1Pin = 4; 
-const int control_2Pin = 5;
+const int enablePin = 6; //Needs to support PWM channel
+const int control_1Pin = 7; 
+const int control_2Pin = 8;
+const int maxSpeed = 255; //max is 255 (with 8-bit resolution)
 
 
 //LDR constants
-const int LDR_NORTH_PIN = A0;
+const int LDR_NORTH_PIN = 2;
 int LDR_NORTH_VALUE;
 
-const int LDR_SOUTH_PIN = A1;
+const int LDR_SOUTH_PIN = 3;
 int LDR_SOUTH_VALUE;
 
-const int LDR_EAST_PIN = A3;
+const int LDR_EAST_PIN = 4;
 int LDR_EAST_VALUE;
 
-const int LDR_WEST_PIN = A4;
+const int LDR_WEST_PIN = 5;
 int LDR_WEST_VALUE;
+
+// Rotiny
+const int rotinyCCW = A0;
+const int rotinyCW = A1;
 
 void checkSun();
 void formatOutput();
 
+// DC
 void turnMotorClockWise();
 void turnMotorCounterClockWise();
 void turnMotorOff();
+
+// rotiny
+void turnPitchUp();
+void turnPitchDown();
+void turnPitcOff();
 
 void setup() {
     Serial.begin(9600);
@@ -44,6 +55,10 @@ void setup() {
     pinMode(enablePin, OUTPUT); //default 8-bit resolution
     pinMode(control_1Pin, OUTPUT);
     pinMode(control_2Pin, OUTPUT);
+
+    //Rotiny setup
+    pinMode(rotinyCCW, OUTPUT);
+    pinMode(rotinyCW, OUTPUT);
 }
 
 void loop() {
@@ -89,7 +104,7 @@ void turnMotorClockWise() {
     digitalWrite(control_1Pin, HIGH);
     digitalWrite(control_2Pin, LOW);
 
-    for (int speed = 0; speed < 255; speed++) {
+    for (int speed = 0; speed < maxSpeed; speed++) {
         analogWrite(enablePin,speed);
         delay(15);
     }
@@ -100,7 +115,7 @@ void turnMotorCounterClockWise() {
     digitalWrite(control_1Pin, LOW);
     digitalWrite(control_2Pin, HIGH);
 
-    for (int speed = 0; speed < 255; speed++) {
+    for (int speed = 0; speed < maxSpeed; speed++) {
         analogWrite(enablePin, speed);
         delay(15);
     }
@@ -110,7 +125,7 @@ void turnMotorOff() {
     digitalWrite(control_1Pin, LOW);
     digitalWrite(control_2Pin, LOW);
 
-    for (int speed = 255; speed > 0; speed--) {
+    for (int speed = maxSpeed; speed > 0; speed--) {
         analogWrite(enablePin, speed);
         delay(15);
     }
