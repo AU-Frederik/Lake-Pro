@@ -20,3 +20,7 @@ void initAllPins(){
     pinMode(MOTOR_SLEEP_PIN,  OUTPUT);
     pinMode(MOTOR_STEP_PIN,  OUTPUT);
 }
+
+void turnOnCannister(){
+    digitalWrite(CannisterON_Pin, HIGH);
+}

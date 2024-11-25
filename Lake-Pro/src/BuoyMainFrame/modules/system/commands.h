@@ -13,22 +13,13 @@ void reactToCommand(){
         message += incomingChar;
     }
 
-    // First character of the message is saved
-    char firstChar = message.charAt(0);
-
     // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
-    switch(firstChar) {
-        case 'M': 
-            goToDepthAndMeasure();
-            break;
-        case 'B':
-            measureBatteryStatus();
-            break;
-        case 'S':
-            measureSolarStatus();
-            break;
-        default:
-            break;
+    if (message.startsWith("M") && message.length() == 3){
+        goToDepthAndMeasure();
+    } else if (message.startsWith("B") && message.length() == 1){
+        measureBatteryStatus();
+    } else if (message.startsWith("S") && message.length() == 1){
+        measureSolarStatus();
     }
 }
 
@@ -53,10 +44,8 @@ void goToDepthAndMeasure() {
 
     if (insideTolerance){
         COM_CANNISTER.println('M');
-        //brakeCable();
     } else {
         COM_CANNISTER.println('W');
-        //unbrakeCable();
     }
 }
 

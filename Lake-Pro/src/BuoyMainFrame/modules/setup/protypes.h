@@ -26,3 +26,7 @@ void unbrakeCable();
 void shutOfBrakeMotor();
 void turnOnBrakeMotor();
 void setMotorDirection(int);
+void turnOnCannister();
+bool sendCommandAndReceiveResponse(const String &command, const char *expectedResponse = "OK", unsigned long timeout = 2000);
+bool LoRaConfigure();
+String stringToHex(const String&);

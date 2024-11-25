@@ -9,15 +9,15 @@ void receiveFromUARTAndPrintToSDCard(){
     // Receives data from cannister via UART, separates it and prints on SD Card separated by comma.
     if (COM_CANNISTER.available()) {
         // Saves data received via UART from cannister to one long string
-        String data = COM_CANNISTER.readStringUntil('\n');
+        dataString = COM_CANNISTER.readStringUntil('\n');
         // Split data and add each data element to the global variables
-        parseDataFromCannister(data);
+        parseDataFromCannister(dataString);
 
         // Add timestamp to line on SD card
         printTimeToSD();
 
         // Print data to SD card
-        printDataToSDCard(data);
+        printDataToSDCard(dataString);
     }
 }
 
@@ -66,4 +66,32 @@ void parseDataFromCannister(String data) {
     COM_DEBUG.print(CH4_sensorVolt);
     COM_DEBUG.print("\t \t");
     COM_DEBUG.println(CH4ppm);
+}
+
+void sendDataOverLora(String data){
+    // Send back the dataString
+    String command = "AT+CMSGHEX=\"" + stringToHex(data) + "\"\r\n";
+    if (sendCommandAndReceiveResponse("Done")) {
+        COM_DEBUG.println("Data string sent successfully.");
+    } else {
+        COM_DEBUG.println("Failed to send data string.");
+    }
+}
+
+
+
+/**
+ * @brief Converts a string to its hexadecimal representation.
+ * 
+ * @param input The input string to convert.
+ * @return String The hexadecimal representation of the input string.
+ */
+String stringToHex(const String& input) {
+    String hex = "";
+    for (uint16_t i = 0; i < input.length(); i++) {
+        char c = input.charAt(i);
+        if (c < 16) hex += '0'; // Pad with 0 for single-digit hex
+        hex += String(c, HEX);
+    }
+    return hex;
 }

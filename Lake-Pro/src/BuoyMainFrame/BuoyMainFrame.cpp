@@ -13,18 +13,22 @@ S: Check solar status
 #include "./modules/setup/modules.h"
 
 void setup() {
+    turnOnCannister();
     setupCommunication();
     setupBrakeMotor();
     initAllPins();
-    digitalWrite(CannisterON_Pin, HIGH);
-    setUpSDCard();
+    //setUpSDCard();
 
     // Make sure that Rotiny is shut off before starting
     holdMotor();
+    unbrakeCable();
+    brakeCable();
 }
 
 void loop() {
     message = "M10"; // Set manual right now before implementing LoRa
+    String command = "AT+MSGHEX=\"" + stringToHex(message) + "\"";
+
     measureMotorPins();
     if (manualMode){
         enableManualMode();
@@ -37,7 +41,5 @@ void loop() {
 
     // Calculates the depth (change ref_pressure to buoy pressure)
     calculateDepth();
-    brakeCable();
-    unbrakeCable();
 }
 

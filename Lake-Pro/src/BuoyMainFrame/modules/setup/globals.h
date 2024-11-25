@@ -26,6 +26,7 @@ float CH4_sensorVolt;
 float outsidePressure;
 float depth;
 float CH4ppm;
+String dataString;
 
 // Motor pins
 int manualMode;
@@ -34,3 +35,7 @@ int turnMotorCW;
 
 // Commands
 String message;
+
+/* LORA */
+static bool networkJoined = false;  // Flag indicating if the network is joined
+
