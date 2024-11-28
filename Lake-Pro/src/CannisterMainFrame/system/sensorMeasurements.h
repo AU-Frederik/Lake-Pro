@@ -1,10 +1,15 @@
 #pragma once
 #include "../setup/modules.h"
 
-void measureAll(){  
 
+/**
+ * @brief Checks if command sent from buoy is 'M'. If not sets all measurements to 0.
+ * If 'M' is sent, it measures all sensors.
+ *
+ */
+void measureAll(){  
     // If message is not M it will only send outsidePressure and depth
-    if (message.charAt(0) != 'M'){
+    if (command.charAt(0) != 'M'){
         outsidePressure_Measure(&outsidePressure);
         co2_SCD             = 0;
         avg_Humidity        = 0;
@@ -15,43 +20,52 @@ void measureAll(){
         CH4ppm              = 0;
 
         COM_DEBUG.println("Not measuring...");
-        COM_DEBUG.println("message = " + message.charAt(0));
+        COM_DEBUG.println("message = " + command.charAt(0));
 
         return;
     } 
 
     COM_DEBUG.println("Measuring...");
-    // measure CO2 in ppm, Temperature in C and Humidity in %
-    SCD30_Measure(&co2_SCD, &temperature_SCD, &humidity_SCD);
+
+    // Measure CO2 in ppm, Temperature in C and Humidity in %
+    //SCD30_Measure(&co2_SCD, &temperature_SCD, &humidity_SCD);
 
     // Check if barometer is ready, if yes measure pressure in hPa
-    HP20_Measure(&pressure_HP20);
+    //HP20_Measure(&pressure_HP20);
 
     // Measure temperature and humidity
     DHT22_Measure(&humidity_DHT, &temperature_DHT);
 
     // Measure outside temperature
-    outsideTemp_Measure(&outsideTemperature);
+    //outsideTemp_Measure(&outsideTemperature);
 
-    // Measures pressure outside and calculates depth (inside the reference pressure can be calculated differently)
-    outsidePressure_Measure(&outsidePressure);
+    // Measure pressure outside
+    //outsidePressure_Measure(&outsidePressure);
 
     calculateAverageTempAndHumidity(&avg_Temperature, &avg_Humidity);
 
-    // Measures oxygen using FD02
+    // Measure oxygen using FD02
     oxygen_Measure(&oxygenLevel);
-
+    
+    
     // Measure CH4 if over 127 hPa as this is 16% oxygen, which is needed for combustion
-    if (oxygenLevel > 127) { 
-        CH4_Measure(&CH4_sensorVolt);
+    if (oxygenLevel > 127 && isMethaneSensorPreheated()) { 
+        //CH4_Measure(&CH4_sensorVolt);
         convertCH4SensorToCH4ppm(&CH4ppm);
     } else {
         CH4_sensorVolt = 0;
         CH4ppm = 0;
     }
+    
+    COM_DEBUG.println("Done measuring!");
 }
 
-// Measures CO2, temperature and humidity on the SCD30 sensor
+/**
+ * @brief Measures CO2, temperature and humidity in the cannister using the SCD30 sensor.
+ * @param co2 a float pointer to the global variable.
+ * @param temperature a float pointer to the global variable.
+ * @param humidity a float pointer to the global variable.
+ */
 void SCD30_Measure(float* co2, float* temperature, float* humidity)
 {
     int resultLen = 3;
@@ -66,7 +80,11 @@ void SCD30_Measure(float* co2, float* temperature, float* humidity)
     }
 }
 
-// Measures pressure on the HP20 sensor, given a pointer to the global variable
+/**
+ * @brief Measures pressure on the HP20 sensor.
+ * @param pressure a float pointer to the global variable.
+ *
+ */
 void HP20_Measure(float* pressure)
 {
     if(HP20x.isAvailable()) {
@@ -77,7 +95,13 @@ void HP20_Measure(float* pressure)
     }
 }
 
-// Measures humidity and temperature on the DHT22 sensor, given pointers to the global variables
+
+/**
+ * @brief Measures humidity and temperature on the DHT22 sensor.
+ * @param humidity - a float pointer to the global variable.
+ * @param temperature a float pointer to the global variable.
+ *
+ */
 void DHT22_Measure(float* humidity, float* temperature) 
 {
     float h   = dht.readHumidity();
@@ -87,7 +111,12 @@ void DHT22_Measure(float* humidity, float* temperature)
     *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
 }
 
-// Measures outside temperature on the TSYS01 sensor, given a pointer to the global variable
+
+/**
+ * @brief Measures outside temperature on the TSYS01 sensor.
+ * @param temperature a float pointer to the global variable.
+ * 
+ */
 void outsideTemp_Measure(float* temperature)
 {
     outsideTempSensor.read();
@@ -95,31 +124,53 @@ void outsideTemp_Measure(float* temperature)
     *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
 }
 
-// Measures the sensor volt from the ADC connected to the Figaro sensor
+
+/**
+ * @brief Measures the sensor volt from the ADC connected to the Figaro sensor.
+ * @param CH4 a float pointer to the global variable.
+ * 
+ */
 void CH4_Measure(float* CH4){
     CH4_sensorVolt = ads.readADC_SingleEnded(0);
 }
 
-// Measures the outside pressure and calculates the depth
+
+/**
+ * @brief Measures the outside pressure.
+ * @param pressure a float pointer to the global variable.
+ * 
+ */
 void outsidePressure_Measure(float* pressure) {
     outsidePressureSensor.read();
     *pressure = outsidePressureSensor.pressure();
 }
 
-// Measures the oxygen level using FD02 with UART
+
+/**
+ * @brief Measures the oxygen level using FD02 with UART. 
+ * For the FD02 to work it needs to receive the command '#MOXY\r'.
+ * @param oxygen a float pointer to the global variable.
+ * 
+ */
 void oxygen_Measure(float *oxygen){
     const char command[] = "#MOXY\r"; // Command as raw bytes
     // Send the command byte by byte for full control
+    COM_DEBUG.println("Sending command to FD02");
     for (size_t i = 0; i < sizeof(command) - 1; i++) {
-        COM_FD02.write(command[i]); // Send byte to Serial2
+        COM_FD02.write(command[i]); // Send byte to Serial
     }
+
+    COM_DEBUG.println("Reading response from FD02");
 
     // Receives response in a string ala "#MOXY 202000 303030 1"
     String response = "";
     while (COM_FD02.available()) {
-      char incomingChar = Serial2.read();
+      char incomingChar = COM_FD02.read();
       response += incomingChar;
     }
+
+    COM_DEBUG.print("Response is: ");
+    COM_DEBUG.println(response);
 
     // Parses the string and removes the first number, as this is oxygen partial pressure
     if (response.length() > 0) {
@@ -128,7 +179,7 @@ void oxygen_Measure(float *oxygen){
         int space1 = response.indexOf(' ', 6); // Find first space after "#MOXY"
         *oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
         } else {
-            Serial.println("Invalid response format.");
+            COM_DEBUG.println("Invalid response format.");
         }
     }
 }

@@ -30,3 +30,13 @@
 #define stepsToBrake                brakeRevolution*stepsPrRevolution
 #define motorSpeed                  3200
 #define motorAcceleration           82000
+
+// Battery
+// BatteryReading = 3 kOhm / (3 kOhm + 9 kOhm) * Battery Voltage
+// 12.6V .. 10.5V -> ~3.15V .. 2.65V -> 645 .. 542
+#define BATTERY_VOLTAGE_MIN         10.7f
+#define BATTERY_VOLTAGE_MAX         12.6f
+#define batteryScaleA               28.722f
+#define batteryScaleB               -617.39f
+#define batteryOffset               3318.3f
+#define batteryVoltageOffset        0.1f

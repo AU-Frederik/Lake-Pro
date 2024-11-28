@@ -1,7 +1,10 @@
 #pragma once
 #include "modules.h"
 
-// Initiates all pins
+/**
+* @brief Sets pin mode on all pins.
+* 
+*/
 void initAllPins(){
     pinMode(CSPin, OUTPUT);
     pinMode(CannisterON_Pin, OUTPUT); // To turn on the cannister on the relay
@@ -19,6 +22,20 @@ void initAllPins(){
     pinMode(MOTOR_SLEEP_PIN,  OUTPUT);
 }
 
+/**
+ * @brief Turns on the cannister on the PCB pin.
+ * 
+ */
 void turnOnCannister(){
     digitalWrite(CannisterON_Pin, HIGH);
+}
+
+void runAllSetups(){
+    turnOnCannister();
+    initAllPins();
+    turnOffCableMotor();
+    setupCommunication();
+    setupBrakeMotor();
+    setupPressureSensor();
+    setUpSDCard(); 
 }

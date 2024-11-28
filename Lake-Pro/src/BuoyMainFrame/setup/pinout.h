@@ -18,3 +18,6 @@
 #define MOTOR_STEP_PIN          2
 #define MOTOR_DIR_PIN           19
 #define MOTOR_SLEEP_PIN         18
+
+// Battery
+#define PA_SENSOR_BATT          A0

@@ -1,6 +1,12 @@
 #pragma once
 #include "../setup/modules.h"
 
+/**
+ * @brief Converts the measured CH4 sensor volt to a CH4 ppm using a lot of mathematical constants. 
+ * These are found from experiments, so the ones below are only for show right now.
+ * @param CH4ppm - a float pointer to the global variable.
+ *
+ */
 void convertCH4SensorToCH4ppm(float* CH4ppm){
       //CH4ppm conversion
     float Pws = 0;
@@ -40,7 +46,7 @@ void packageAndSendData() {
     dataString += String(CH4_sensorVolt) + ';';
     dataString += String(CH4ppm) + ";";
     dataString += String(oxygenLevel) + ";";
-
+    
     // Send string of sensor data with a new line
     COM_BUOY.println(dataString);
     COM_DEBUG.print("Sending data to buoy: ");
@@ -51,4 +57,52 @@ void calculateAverageTempAndHumidity(float* temp, float* humidity) {
     // Calculate average temperature and humidity based on the two sensors
     *temp = (temperature_DHT+temperature_SCD)/2;
     *humidity = (humidity_DHT+humidity_SCD)/2;
+}
+
+
+
+void testData(){
+  // Example overview of sensor data
+  COM_DEBUG.println("=== Sensor Data Overview ===");
+  
+  COM_DEBUG.print("CO2 (SCD): ");
+  COM_DEBUG.println(co2_SCD, 2); // Prints with 2 decimal places
+  
+  COM_DEBUG.print("Humidity (SCD): ");
+  COM_DEBUG.println(humidity_SCD, 2);
+  
+  COM_DEBUG.print("Temperature (SCD): ");
+  COM_DEBUG.println(temperature_SCD, 2);
+  
+  COM_DEBUG.print("Humidity (DHT): ");
+  COM_DEBUG.println(humidity_DHT, 2);
+  
+  COM_DEBUG.print("Temperature (DHT): ");
+  COM_DEBUG.println(temperature_DHT, 2);
+  
+  COM_DEBUG.print("Pressure (HP20): ");
+  COM_DEBUG.println(pressure_HP20, 2);
+  
+  COM_DEBUG.print("Average Temperature: ");
+  COM_DEBUG.println(avg_Temperature, 2);
+  
+  COM_DEBUG.print("Average Humidity: ");
+  COM_DEBUG.println(avg_Humidity, 2);
+  
+  COM_DEBUG.print("CH4 Sensor Voltage: ");
+  COM_DEBUG.println(CH4_sensorVolt, 2);
+  
+  COM_DEBUG.print("Outside Temperature: ");
+  COM_DEBUG.println(outsideTemperature, 2);
+  
+  COM_DEBUG.print("Outside Pressure: ");
+  COM_DEBUG.println(outsidePressure, 2);
+  
+  COM_DEBUG.print("CH4 (ppm): ");
+  COM_DEBUG.println(CH4ppm, 2);
+  
+  COM_DEBUG.print("Oxygen Level: ");
+  COM_DEBUG.println(oxygenLevel, 2);
+  
+  COM_DEBUG.println("===========================");
 }

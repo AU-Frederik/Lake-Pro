@@ -17,40 +17,36 @@ SYSTEM CONSISTS OF:
 
 void setup() 
 {
+    // Starts the time
+    startTime = millis();
+    delay(100);
+    
     // Sets up I2C and Serial communication
     setupCommunication();
 
+    COM_DEBUG.println("Setting up sensors...");
     // Initiliazes all sensors
     initSensors();
+    COM_DEBUG.println("Finished setting up communication...");
 
-    // preheatMethaneSensor(); // uncomment to preheat
     delay(1000);
 }
 
 void loop() 
 {
     // Read message received from buoy - if 'M' is received it starts measuring on all sensors
-    //message = COM_BUOY.readStringUntil('\n');
-    message = 'M';
+    //command = COM_BUOY.readStringUntil('\n');
+    command = 'M';
     COM_DEBUG.print("Received message: ");
-    COM_DEBUG.println(message);
-
-    // For the FD02
-    /*if (COM_FD02.available()){
-        Serial2.print("#MOXY\r");  // Original command
-
-        delay(500);
-        String msg = COM_FD02.readStringUntil('\n');
-        COM_DEBUG.print("msg: ");
-        COM_DEBUG.println(msg);
-    }
-    COM_DEBUG.println("Hello!");*/
+    COM_DEBUG.println(command);
 
     // String to hold the data package - resets every loop
     dataString = "";
 
     // Measure CO2, Temperature (in & out), pressure, humidity and CH4 (sensor volt & ppm)
     measureAll();
-    packageAndSendData();
+    COM_DEBUG.println("Finished oxygen measurements.");
+    //packageAndSendData();
+    testData();
     delay(3000); // Dont change - SCD30 only works at 2.1 seconds delay or above.
 }

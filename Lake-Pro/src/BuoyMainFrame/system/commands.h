@@ -6,14 +6,16 @@
  * 
  */
 void reactToCommand(){
+    int cmd_len = command.length();
+
     // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
-    if (message.startsWith("M") && message.length() == 3){
+    if (command.startsWith("M") && cmd_len == 3){
         COM_DEBUG.println("Message received: M. Changing depth...");
         goToDepthAndMeasure();
-    } else if (message.startsWith("B") && message.length() == 1){
+    } else if (command.startsWith("B") && cmd_len == 1){
         COM_DEBUG.println("Message received: B. Measuring battery level...");
         measureBatteryStatus();
-    } else if (message.startsWith("S") && message.length() == 1){
+    } else if (command.startsWith("S") && cmd_len == 1){
         COM_DEBUG.println("Message received: B. Measuring solar level...");
         measureSolarStatus();
     } else {
@@ -27,8 +29,8 @@ void reactToCommand(){
  * 
  */
 void goToDepthAndMeasure() {
-    // Extracts the number part of the message and converts to an int
-    String numericPart = message.substring(1);
+    // Extracts the number part of the command and converts to an int
+    String numericPart = command.substring(1);
     int destinationDepth = numericPart.toInt();
 
     // Variables to make code more readable

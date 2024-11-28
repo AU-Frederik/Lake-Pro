@@ -11,6 +11,15 @@ void calculateDepth(){
 }
 
 /**
+ * @brief Outputs the depth on the Debug monitor.
+ * 
+ */
+void outputDepth(){
+    COM_DEBUG.println("Depth is" + String(depth));
+    COM_DEBUG.println("Ref pressure is " + String(referencePressure));
+}
+
+/**
  * @brief Reads a String from the cannister, splits the data to into variables and prints the time + data to the SD card.
  * 
  */

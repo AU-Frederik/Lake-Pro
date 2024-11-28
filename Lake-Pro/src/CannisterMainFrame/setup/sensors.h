@@ -1,40 +1,57 @@
 #pragma once
 #include "modules.h"
 
-void    initSensors(){
+/**
+ * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
+ *
+ */
+void initSensors(){
     // Initialize HP20x, SCD30 and DHT22 sensors
-    HP20x.begin();
-    scd30.initialize();
+    //HP20x.begin();
+    //scd30.initialize();
     dht.begin();
     
-    // Initializes the outside temperature sensor
-    /*while (!outsideTempSensor.init()) {
-        COM_DEBUG.println("TSYS01 device failed to initialize!");
-        delay(1000);
-    }
-    
-    // Initializes the ADC and sets the gain
-    while(!ads.begin()) {
-        COM_DEBUG.println("ADC device failed to initialize!");
-        delay(1000);
-    }
-    ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV  0.1875mV (default)
 
-    // Initiliazes BAR100 - outside pressure sensor and sets fluid density
-    outsidePressureSensor.init();
-    while (!outsidePressureSensor.isInitialized()) {
-        COM_DEBUG.println("BAR100 device failed to initialize! Trying again...");
+    /*
+    // Sets up the ADC, BAR100 and TSYS01 sensors and holds program until they are initialized.
+    while (!allSensorsReady){
+        if(ads.begin()) {isADSReady = true;}
+        delay(500);
+
         outsidePressureSensor.init();
-        delay(1000);
-    }
-    outsidePressureSensor.setFluidDensity(997); // kg/m^3 (freshwater, 1029 for seawater)
-    */
+        if(outsidePressureSensor.isInitialized()){isOutsidePressureSensorReady = true;}
+        delay(500);
+
+        if(outsideTempSensor.init()){isOutsideTempSensorReady = true;}
+        delay(500);
+
+        if (!isADSReady)                    {COM_DEBUG.println("ADC device failed to initialize!");}
+        if (!isOutsidePressureSensorReady)  {COM_DEBUG.println("BAR100 device failed to initialize!");}
+        if (!isOutsideTempSensorReady)      {COM_DEBUG.println("TSYS01 device failed to initialize!");}
+        allSensorsReady = isADSReady && isOutsidePressureSensorReady && isOutsideTempSensorReady;
+    }*/
+
+    //COM_DEBUG.println(ads.begin());
+    //outsidePressureSensor.init();
+    //outsideTempSensor.init();
+
+    // Sets gain on the ADC
+    //ads.setGain(GAIN_TWOTHIRDS);
+
+    // Sets the fluid density to fresh water
+    //outsidePressureSensor.setFluidDensity(997);  
 }
 
-void preheatMethaneSensor() {
-    while (myTime < timeToPreheat){
+/**
+ * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
+ *
+ */
+bool isMethaneSensorPreheated() {
+    myTime = startTime + millis(); // Time is added each iteration.
+    if (myTime < timeToPreheat){
         COM_DEBUG.println("Preheating methane sensor...");
-        delay(1000);
+        return false;
     }
     COM_DEBUG.println("Methane sensor is now preheated.");
+    return true;
 }

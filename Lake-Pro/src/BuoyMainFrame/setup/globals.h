@@ -35,7 +35,7 @@ int turnMotorCW;
 bool isCableBraked = true;
 
 // Commands
-String message;
+String command;
 
 
 float referencePressure;

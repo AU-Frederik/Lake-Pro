@@ -17,4 +17,13 @@ float CH4ppm;
 float oxygenLevel;
 unsigned long myTime;
 String dataString;
-String message;
+String command;
+
+/* Status - Sets to false from start */
+bool isOxygenSensorReady;
+bool isOutsideTempSensorReady;
+bool isADSReady;
+bool isOutsidePressureSensorReady;
+bool allSensorsReady;
+
+unsigned long startTime;

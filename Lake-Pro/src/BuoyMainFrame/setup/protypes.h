@@ -48,3 +48,5 @@ void measureSolarStatus();
 // General
 void calculateDepth();
 void turnOnCannister();
+void setupCommunication();
+void runAllSetups();

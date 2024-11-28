@@ -1,6 +1,10 @@
 #pragma once 
 #include "modules.h"
 
+/**
+ * @brief Setups up I2C, debug serial, buoy serial and FD02 oxygen sensor serial.
+ * 
+ */
 void setupCommunication(){
     // Setup I2C & UART to either PC or BuoyMainFrame Arduino
     Wire.begin();
