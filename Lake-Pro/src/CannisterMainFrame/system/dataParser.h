@@ -48,9 +48,11 @@ void packageAndSendData() {
     dataString += String(oxygenLevel) + ";";
     
     // Send string of sensor data with a new line
-    COM_BUOY.println(dataString);
-    COM_DEBUG.print("Sending data to buoy: ");
-    COM_DEBUG.println(dataString);
+    if (COM_BUOY.available()){
+      COM_BUOY.println(dataString);
+      COM_DEBUG.print("Sending data to buoy: ");
+      COM_DEBUG.println(dataString);
+    }
 }
 
 void calculateAverageTempAndHumidity(float* temp, float* humidity) {
@@ -60,48 +62,47 @@ void calculateAverageTempAndHumidity(float* temp, float* humidity) {
 }
 
 
-
 void testData(){
   // Example overview of sensor data
   COM_DEBUG.println("=== Sensor Data Overview ===");
   
-  COM_DEBUG.print("CO2 (SCD): ");
+  COM_DEBUG.print("CO2 (SCD): \t\t");
   COM_DEBUG.println(co2_SCD, 2); // Prints with 2 decimal places
   
-  COM_DEBUG.print("Humidity (SCD): ");
+  COM_DEBUG.print("Humidity (SCD): \t");
   COM_DEBUG.println(humidity_SCD, 2);
   
-  COM_DEBUG.print("Temperature (SCD): ");
+  COM_DEBUG.print("Temperature (SCD): \t");
   COM_DEBUG.println(temperature_SCD, 2);
   
-  COM_DEBUG.print("Humidity (DHT): ");
+  COM_DEBUG.print("Humidity (DHT): \t");
   COM_DEBUG.println(humidity_DHT, 2);
   
-  COM_DEBUG.print("Temperature (DHT): ");
+  COM_DEBUG.print("Temperature (DHT): \t");
   COM_DEBUG.println(temperature_DHT, 2);
   
-  COM_DEBUG.print("Pressure (HP20): ");
+  COM_DEBUG.print("Pressure (HP20): \t");
   COM_DEBUG.println(pressure_HP20, 2);
   
-  COM_DEBUG.print("Average Temperature: ");
+  COM_DEBUG.print("Average Temperature: \t");
   COM_DEBUG.println(avg_Temperature, 2);
   
-  COM_DEBUG.print("Average Humidity: ");
+  COM_DEBUG.print("Average Humidity: \t");
   COM_DEBUG.println(avg_Humidity, 2);
   
-  COM_DEBUG.print("CH4 Sensor Voltage: ");
+  COM_DEBUG.print("CH4 Sensor Voltage: \t");
   COM_DEBUG.println(CH4_sensorVolt, 2);
   
-  COM_DEBUG.print("Outside Temperature: ");
+  COM_DEBUG.print("Outside Temperature: \t");
   COM_DEBUG.println(outsideTemperature, 2);
   
-  COM_DEBUG.print("Outside Pressure: ");
+  COM_DEBUG.print("Outside Pressure: \t");
   COM_DEBUG.println(outsidePressure, 2);
   
-  COM_DEBUG.print("CH4 (ppm): ");
+  COM_DEBUG.print("CH4 (ppm): \t\t");
   COM_DEBUG.println(CH4ppm, 2);
   
-  COM_DEBUG.print("Oxygen Level: ");
+  COM_DEBUG.print("Oxygen Level: \t\t");
   COM_DEBUG.println(oxygenLevel, 2);
   
   COM_DEBUG.println("===========================");

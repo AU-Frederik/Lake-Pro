@@ -39,6 +39,8 @@ void receiveFromUARTAndPrintToSDCard(){
         // Print data to SD card
         COM_DEBUG.println("Prints data and time to SD card...");
         printDataToSDCard(dataString);
+    } else {
+        COM_DEBUG.println("Cum cannister not available.");
     }
 }
 

@@ -11,5 +11,5 @@ void convertCH4SensorToCH4ppm(float*);
 void packageAndSendData();
 void CH4_Measure(float*);
 void calculateAverageTempAndHumidity(float*, float*);
-void outsidePressure_Measure(float*);
+void outsidePressure_Measure(float*, float*);
 void oxygen_Measure(float*);

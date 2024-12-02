@@ -31,11 +31,5 @@ void turnOnCannister(){
 }
 
 void runAllSetups(){
-    turnOnCannister();
-    initAllPins();
-    turnOffCableMotor();
-    setupCommunication();
-    setupBrakeMotor();
-    setupPressureSensor();
-    setUpSDCard(); 
+
 }

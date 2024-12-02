@@ -55,7 +55,7 @@ void goToDepthAndMeasure() {
         COM_CANNISTER.println('M');
         COM_DEBUG.println("Inside tolerance - sending 'M' to cannister");
     } else {
-        COM_CANNISTER.println('W');
+        COM_CANNISTER.println('M'); // CHANGE LATER!!!
         COM_DEBUG.println("Outside tolerance - sending 'W' to cannister.");
     }
 }

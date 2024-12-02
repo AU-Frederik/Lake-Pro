@@ -10,7 +10,7 @@
 #define COM_DEBUG           Serial
 #define COM_DEBUG_BAUDRATE  9600
 
-#define COM_BUOY            Serial2
+#define COM_BUOY            Serial3
 #define COM_BUOY_BAUDRATE   9600
 
 #define COM_FD02            Serial1

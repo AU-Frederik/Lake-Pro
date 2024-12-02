@@ -12,15 +12,28 @@ S: Check solar status
 
 #include "./setup/modules.h"
 
+/*
 void setup() {
-    runAllSetups();
+    //runAllSetups();
+    initAllPins();
+    turnOnCannister();
+    //turnOffCableMotor();
+    setupCommunication();
+    //setupBrakeMotor();
+    //setupPressureSensor();
+    //setUpSDCard(); 
 }
 
 void loop() {
-    measureRefPressure(&referencePressure);
+    //measureRefPressure(&referencePressure);
     
     command = "M10"; // Set manually
 
+    if (COM_CANNISTER.available() > 0){
+        COM_CANNISTER.println(command);
+    } else {
+        COM_DEBUG.println("Couldn't print to cannister");
+    }
     // Check the manual buttons, S -> Manual mode, R -> Automatic mode
     measureMotorPins();
     unbrakeCable();             // Unbrakes the cable if it is braked.
@@ -35,8 +48,29 @@ void loop() {
 
     // Calculates the depth (change ref_pressure to buoy pressure)
     calculateDepth();
-    outputDepth();
+    
+}
+*/
+
+
+void setup() {
+  Serial.begin(9600);
+  Serial2.begin(9600);
+
+  Serial.println("Mega B: Sending handshake...");
+
+  // Send handshake signal to Mega A
+  Serial2.println("READY");
+  Serial.println("Mega B: Handshake sent. Ready to receive data.");
 }
 
-
-
+void loop() {
+  // Check if data is available from Mega A
+  if (Serial2.available() > 0) {
+    String receivedMessage = Serial2.readString();
+    Serial.print("Received from Mega A: ");
+    Serial.println(receivedMessage);
+  } else {
+    Serial.println("No connection...");
+  }
+}

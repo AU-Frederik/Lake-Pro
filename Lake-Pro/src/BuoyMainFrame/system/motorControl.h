@@ -45,12 +45,9 @@ void measureMotorPins(){
  * 
  */
 void enableManualMode(){
-    COM_DEBUG.println("Enabling manual mode...");
     if (!turnMotorCCW && turnMotorCW){
-        COM_DEBUG.println("Moving cable up manually.");
         moveCableMotorUp(); // Turn CW
     } else if (turnMotorCCW && !turnMotorCW){
-        COM_DEBUG.println("Moving cable down manually.");
         moveCableMotorDown();  // Turn CCW
     } else {                                  
         turnOffCableMotor();    // Don't move

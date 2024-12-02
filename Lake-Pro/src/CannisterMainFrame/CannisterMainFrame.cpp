@@ -26,27 +26,29 @@ void setup()
 
     COM_DEBUG.println("Setting up sensors...");
     // Initiliazes all sensors
-    initSensors();
+    //initSensors();
     COM_DEBUG.println("Finished setting up communication...");
-
-    delay(1000);
 }
 
 void loop() 
 {
+    command = "";
     // Read message received from buoy - if 'M' is received it starts measuring on all sensors
-    //command = COM_BUOY.readStringUntil('\n');
-    command = 'M';
-    COM_DEBUG.print("Received message: ");
-    COM_DEBUG.println(command);
+    if (COM_BUOY.available() > 0){
+        command = COM_BUOY.readStringUntil('\n');
+        COM_DEBUG.print("Received message: ");
+        COM_DEBUG.println(command);
+        COM_BUOY.println("ack!!!!!");
+    } else {
+        COM_DEBUG.println("Com buoy not available.");
+    }
 
     // String to hold the data package - resets every loop
     dataString = "";
 
     // Measure CO2, Temperature (in & out), pressure, humidity and CH4 (sensor volt & ppm)
-    measureAll();
-    COM_DEBUG.println("Finished oxygen measurements.");
+    //measureAll();
     //packageAndSendData();
-    testData();
-    delay(3000); // Dont change - SCD30 only works at 2.1 seconds delay or above.
+    //testData();
+    delay(500); // Dont change - SCD30 only works at 2.1 seconds delay or above.
 }
