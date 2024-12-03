@@ -17,38 +17,51 @@ SYSTEM CONSISTS OF:
 
 void setup() 
 {
-    // Starts the time
-    startTime = millis();
-    delay(100);
-    
-    // Sets up I2C and Serial communication
-    setupCommunication();
-
-    COM_DEBUG.println("Setting up sensors...");
-    // Initiliazes all sensors
-    //initSensors();
-    COM_DEBUG.println("Finished setting up communication...");
+    setupTime = millis();   // Starts the time
+    setupCommunication();   // Sets up I2C and Serial communication
+    initializeDHT22();      // Initiliazes all sensors
 }
 
-void loop() 
-{
-    command = "";
-    // Read message received from buoy - if 'M' is received it starts measuring on all sensors
-    if (COM_BUOY.available() > 0){
-        command = COM_BUOY.readStringUntil('\n');
-        COM_DEBUG.print("Received message: ");
-        COM_DEBUG.println(command);
-        COM_BUOY.println("ack!!!!!");
-    } else {
-        COM_DEBUG.println("Com buoy not available.");
+void loop(){
+
+    // Receive command
+    // Measure on all sensors that are initialized
+    checkInitializationOfSensors();
+    unsigned long loopTime = millis();
+    char command = receiveCommandFromBuoyAndSendResponse();
+    char* measurements = measureAll(command);
+    bool sendCheck = sendToBuoyAndReceiveResponse(measurements, 5000);
+    DEBUG_SERIAL.println(sendCheck ? "Sent data and received ACK" : "Sending data failed.");
+    //delay(abs(loopTime - TIME_PR_ROUND)); // Delay so that the loop takes exactly 10 seconds
+    delay(3000);
+}
+
+ bool sendToBuoyAndReceiveResponse(const char* message, unsigned long timeout){
+    BUOY_SERIAL.println(message);      // Send message to buoy
+    
+    unsigned long startTime = millis();
+    // Checks for response before set time out
+    while (millis() - startTime < timeout) {
+        if (BUOY_SERIAL.available() > 0) {
+            char response[10];
+            BUOY_SERIAL.readBytesUntil('\n', response, sizeof(response));
+            response[sizeof(response) - 1] = '\0'; // Ensure null-termination
+
+            if (strcmp(response, "ACK") == 0) {
+                return true;
+            }
+        }
+    }
+    return false;  // Timeout or response not received
+}
+
+char receiveCommandFromBuoyAndSendResponse(){
+    char command = '\0';  // Default to null character
+
+    if (BUOY_SERIAL.available() > 0) {
+        command = BUOY_SERIAL.read();  // Read a single character
+        BUOY_SERIAL.println("ACK");  // Acknowledge the received command
     }
 
-    // String to hold the data package - resets every loop
-    dataString = "";
-
-    // Measure CO2, Temperature (in & out), pressure, humidity and CH4 (sensor volt & ppm)
-    //measureAll();
-    //packageAndSendData();
-    //testData();
-    delay(500); // Dont change - SCD30 only works at 2.1 seconds delay or above.
+    return command;
 }

@@ -5,7 +5,7 @@
 #include "setup/modules.h"
 
 void setup() {
-    COM_DEBUG.begin(9600);
+    DEBUG_SERIAL.begin(9600);
     initAllPins();
 }
 
@@ -49,35 +49,35 @@ void calibratePosition() {
         if (!yawCalibrated) {
             
             if (abs(yawDifference) < stopLimit) {
-                COM_DEBUG.println("Turning Yaw off");
+                DEBUG_SERIAL.println("Turning Yaw off");
                 turnYawOff();
                 yawCalibrated = true;
             }
 
             else if (yawDifference > 0) {
-                COM_DEBUG.println("Turning Yaw CW");
+                DEBUG_SERIAL.println("Turning Yaw CW");
                 turnYawCW();
             }
         
             else if (yawDifference < 0) {
-                COM_DEBUG.println("Turning Yaw CCW");
+                DEBUG_SERIAL.println("Turning Yaw CCW");
                 turnYawCCW();
             }
         }
 
         if (!pitchCalibrated) {
             if (abs(pitchDifference) < stopLimit) {
-                COM_DEBUG.println("Turning pitch off");
+                DEBUG_SERIAL.println("Turning pitch off");
                 turnPitchOff();
                 pitchCalibrated = true;
             }
             else if (pitchDifference > 0) {
-                COM_DEBUG.println("Turning pitch up");
+                DEBUG_SERIAL.println("Turning pitch up");
                 turnPitchUp();
             }
         
             else if (pitchDifference < 0) {
-                COM_DEBUG.println("Turning pitch down");
+                DEBUG_SERIAL.println("Turning pitch down");
                 turnPitchDown();
             }
         }

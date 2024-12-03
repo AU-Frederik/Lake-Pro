@@ -6,42 +6,18 @@
  * the pressure outside the cannister under water.
  * 
  */
-void calculateDepth(){
-    depth = (outsidePressure-referencePressure)/(waterDensity*g_acc);
+float calculateDepth(float referencePressure, float outsidePressure){
+    depth = (outsidePressure-referencePressure)/(WATER_DENSITY*G_ACC);
+    return depth;
 }
 
 /**
  * @brief Outputs the depth on the Debug monitor.
  * 
  */
-void outputDepth(){
-    COM_DEBUG.println("Depth is" + String(depth));
-    COM_DEBUG.println("Ref pressure is " + String(referencePressure));
-}
-
-/**
- * @brief Reads a String from the cannister, splits the data to into variables and prints the time + data to the SD card.
- * 
- */
-void receiveFromUARTAndPrintToSDCard(){
-    // Receives data from cannister via UART, separates it and prints on SD Card separated by comma.
-    if (COM_CANNISTER.available()) {
-        // Saves data received via UART from cannister to one long string
-        dataString = COM_CANNISTER.readStringUntil('\n');
-        // Split data and add each data element to the global variables
-        COM_DEBUG.println("Parses data from cannister...");
-        parseDataFromCannister(dataString);
-
-        // Add timestamp to line on SD card
-        COM_DEBUG.println("Prints time to SD...");
-        printTimeToSD();
-
-        // Print data to SD card
-        COM_DEBUG.println("Prints data and time to SD card...");
-        printDataToSDCard(dataString);
-    } else {
-        COM_DEBUG.println("Cum cannister not available.");
-    }
+void outputDepth(float depth, float referencePressure){
+    DEBUG_SERIAL.println("Depth is " + String(depth));
+    DEBUG_SERIAL.println("Ref pressure is " + String(referencePressure));
 }
 
 /**
@@ -56,7 +32,7 @@ void parseDataFromCannister(String data) {
     int len_data = (int) data.length();
     
     // Splits the data into a float array, as each data is separated with a semicolon when received.
-    while (endIndex != -1 && floatCount < maxFloats) {
+    while (endIndex != -1 && floatCount < MAX_FLOATS) {
         String token = data.substring(startIndex, endIndex); // saves next number as token, seperatered by ";"
         receivedNumbers[floatCount] = token.toFloat();
         startIndex = endIndex + 1;
@@ -76,15 +52,15 @@ void parseDataFromCannister(String data) {
     CH4ppm              = receivedNumbers[7];
 
     // Print data received to the debugger monitor
-    COM_DEBUG.println("CO2   HUMIDITY   TEMPERATURE INSIDE   PRESSURE INSIDE   TEMPERATURE OUTSIDE   PRESSURE OUTSIDE   CH4 SENSORVOLT   CH4 PPM");
-    COM_DEBUG.print(co2_SCD);               COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(avg_Humidity);          COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(avg_Temperature);       COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(pressure_HP20);         COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(outsideTemperature);    COM_DEBUG.print("\t \t");
-    COM_DEBUG.print(outsidePressure);       COM_DEBUG.print("\t \t"); 
-    COM_DEBUG.print(CH4_sensorVolt);        COM_DEBUG.print("\t \t");
-    COM_DEBUG.println(CH4ppm);
+    DEBUG_SERIAL.println("CO2   HUMIDITY   TEMPERATURE INSIDE   PRESSURE INSIDE   TEMPERATURE OUTSIDE   PRESSURE OUTSIDE   CH4 SENSORVOLT   CH4 PPM");
+    DEBUG_SERIAL.print(co2_SCD);               DEBUG_SERIAL.print("\t \t");
+    DEBUG_SERIAL.print(avg_Humidity);          DEBUG_SERIAL.print("\t \t");
+    DEBUG_SERIAL.print(avg_Temperature);       DEBUG_SERIAL.print("\t \t");
+    DEBUG_SERIAL.print(pressure_HP20);         DEBUG_SERIAL.print("\t \t");
+    DEBUG_SERIAL.print(outsideTemperature);    DEBUG_SERIAL.print("\t \t");
+    DEBUG_SERIAL.print(outsidePressure);       DEBUG_SERIAL.print("\t \t"); 
+    DEBUG_SERIAL.print(CH4_sensorVolt);        DEBUG_SERIAL.print("\t \t");
+    DEBUG_SERIAL.println(CH4ppm);
 }
 
 /**
@@ -95,9 +71,9 @@ void sendDataOverLora(String data){
     // Send back the dataString
     String command = "AT+CMSGHEX=\"" + stringToHex(data) + "\"\r\n";
     if (sendCommandAndReceiveResponse("Done")) {
-        COM_DEBUG.println("Data string sent successfully.");
+        DEBUG_SERIAL.println("Data string sent successfully.");
     } else {
-        COM_DEBUG.println("Failed to send data string.");
+        DEBUG_SERIAL.println("Failed to send data string.");
     }
 }
 

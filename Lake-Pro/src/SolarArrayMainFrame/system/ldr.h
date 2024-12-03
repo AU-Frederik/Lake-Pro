@@ -17,15 +17,15 @@ void readLDRSensors() {
  * 
  */
 void outputLDRValues() {
-    COM_DEBUG.print("LDR_NORTH: ");
-    COM_DEBUG.print(LDR_NORTH_VALUE);
-    COM_DEBUG.print('\t');
-    COM_DEBUG.print("LDR_SOUTH: ");
-    COM_DEBUG.print(LDR_SOUTH_VALUE);
-    COM_DEBUG.print('\t');
-    COM_DEBUG.print("LDR_EAST: ");
-    COM_DEBUG.print(LDR_EAST_VALUE);
-    COM_DEBUG.print('\t');
-    COM_DEBUG.print("LDR_WEST: ");
-    COM_DEBUG.println(LDR_WEST_VALUE);
+    DEBUG_SERIAL.print("LDR_NORTH: ");
+    DEBUG_SERIAL.print(LDR_NORTH_VALUE);
+    DEBUG_SERIAL.print('\t');
+    DEBUG_SERIAL.print("LDR_SOUTH: ");
+    DEBUG_SERIAL.print(LDR_SOUTH_VALUE);
+    DEBUG_SERIAL.print('\t');
+    DEBUG_SERIAL.print("LDR_EAST: ");
+    DEBUG_SERIAL.print(LDR_EAST_VALUE);
+    DEBUG_SERIAL.print('\t');
+    DEBUG_SERIAL.print("LDR_WEST: ");
+    DEBUG_SERIAL.println(LDR_WEST_VALUE);
 }

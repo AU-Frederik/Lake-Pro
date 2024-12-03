@@ -22,7 +22,7 @@ void printTimeToSD() {
       myFile.print(myRTC.getSecond(), DEC);
       myFile.print(" ; ");
     } else {
-      COM_DEBUG.println("Error at opening SD file for adding RTC time.");
+      DEBUG_SERIAL.println("Error at opening SD file for adding RTC time.");
     }
     myFile.close();
 }
@@ -42,17 +42,17 @@ void printTimeToSD() {
 void showRTCTimeSettings(){
   // Request the time correction on the Serial
   delay(1000);
-  COM_DEBUG.println("Format YYMMDDwhhmmssx");
-  COM_DEBUG.println("Where YY = Year (ex. 20 for 2020)");
-  COM_DEBUG.println("      MM = Month (ex. 04 for April)");
-  COM_DEBUG.println("      DD = Day of month (ex. 09 for 9th)");
-  COM_DEBUG.println("      w  = Day of week from 1 to 7, 1 = Sunday (ex. 5 for Thursday)");
-  COM_DEBUG.println("      hh = hours in 24h format (ex. 09 for 9AM or 21 for 9PM)");
-  COM_DEBUG.println("      mm = minutes (ex. 02)");
-  COM_DEBUG.println("      ss = seconds (ex. 42)");
-  COM_DEBUG.println("Example for input : 2004095090242x");
-  COM_DEBUG.println("-----------------------------------------------------------------------------");
-  COM_DEBUG.println("Please enter the current time to set on DS3231 ended by 'x':");
+  DEBUG_SERIAL.println("Format YYMMDDwhhmmssx");
+  DEBUG_SERIAL.println("Where YY = Year (ex. 20 for 2020)");
+  DEBUG_SERIAL.println("      MM = Month (ex. 04 for April)");
+  DEBUG_SERIAL.println("      DD = Day of month (ex. 09 for 9th)");
+  DEBUG_SERIAL.println("      w  = Day of week from 1 to 7, 1 = Sunday (ex. 5 for Thursday)");
+  DEBUG_SERIAL.println("      hh = hours in 24h format (ex. 09 for 9AM or 21 for 9PM)");
+  DEBUG_SERIAL.println("      mm = minutes (ex. 02)");
+  DEBUG_SERIAL.println("      ss = seconds (ex. 42)");
+  DEBUG_SERIAL.println("Example for input : 2004095090242x");
+  DEBUG_SERIAL.println("-----------------------------------------------------------------------------");
+  DEBUG_SERIAL.println("Please enter the current time to set on DS3231 ended by 'x':");
 }
 
 /**
@@ -63,7 +63,7 @@ void showRTCTimeSettings(){
 void setRTCTimeFromSerialInput() {
   // If something is coming in on the serial line, it's
   // a time correction so set the clock accordingly.
-  if (COM_DEBUG.available()) {
+  if (DEBUG_SERIAL.available()) {
     inputDateFromSerial();
 
     myRTC.setClockMode(false);  // set to 24h
@@ -79,21 +79,21 @@ void setRTCTimeFromSerialInput() {
     // Give time at next five seconds
     for (uint8_t i = 0; i < 5; i++){
         delay(1000);
-        COM_DEBUG.print(myRTC.getYear(), DEC);
-        COM_DEBUG.print("-");
-        COM_DEBUG.print(myRTC.getMonth(century), DEC);
-        COM_DEBUG.print("-");
-        COM_DEBUG.print(myRTC.getDate(), DEC);
-        COM_DEBUG.print(" ");
-        COM_DEBUG.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
-        COM_DEBUG.print(":");
-        COM_DEBUG.print(myRTC.getMinute(), DEC);
-        COM_DEBUG.print(":");
-        COM_DEBUG.println(myRTC.getSecond(), DEC);
+        DEBUG_SERIAL.print(myRTC.getYear(), DEC);
+        DEBUG_SERIAL.print("-");
+        DEBUG_SERIAL.print(myRTC.getMonth(century), DEC);
+        DEBUG_SERIAL.print("-");
+        DEBUG_SERIAL.print(myRTC.getDate(), DEC);
+        DEBUG_SERIAL.print(" ");
+        DEBUG_SERIAL.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
+        DEBUG_SERIAL.print(":");
+        DEBUG_SERIAL.print(myRTC.getMinute(), DEC);
+        DEBUG_SERIAL.print(":");
+        DEBUG_SERIAL.println(myRTC.getSecond(), DEC);
     }
 
     // Notify that we are ready for the next input
-    COM_DEBUG.println("Please enter the current time to set on DS3231 ended by 'x':");
+    DEBUG_SERIAL.println("Please enter the current time to set on DS3231 ended by 'x':");
   }
   delay(1000);
 }
@@ -114,8 +114,8 @@ void inputDateFromSerial() {
 
 	uint8_t currentPos = 0;
 	while (!isStrComplete) {
-		if (COM_DEBUG.available()) {
-			inputChar = COM_DEBUG.read();
+		if (DEBUG_SERIAL.available()) {
+			inputChar = DEBUG_SERIAL.read();
 			inputStr[currentPos] = inputChar;
 			currentPos += 1;
 
@@ -125,7 +125,7 @@ void inputDateFromSerial() {
 			}
 		}
 	}
-	COM_DEBUG.println(inputStr);
+	DEBUG_SERIAL.println(inputStr);
 
   // Find the end of char "x"
   int posX = -1;

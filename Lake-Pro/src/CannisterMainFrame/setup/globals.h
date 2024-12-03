@@ -16,14 +16,11 @@ float outsidePressure;
 float CH4ppm;
 float oxygenLevel;
 unsigned long myTime;
-String dataString;
-String command;
 
 /* Status - Sets to false from start */
-bool isOxygenSensorReady;
-bool isOutsideTempSensorReady;
+bool isBAR100Ready;
+bool isSCD30Ready;
 bool isADSReady;
-bool isOutsidePressureSensorReady;
-bool allSensorsReady;
+bool isHP20xReady;
 
-unsigned long startTime;
+unsigned long setupTime;

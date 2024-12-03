@@ -5,21 +5,23 @@
  * @brief Delegates to other function depending on what command was called.
  * 
  */
-void reactToCommand(){
-    int cmd_len = command.length();
+void reactToCommand(String commandReceivedFromLora){
+    int cmd_len = commandReceivedFromLora.length();
 
     // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
-    if (command.startsWith("M") && cmd_len == 3){
-        COM_DEBUG.println("Message received: M. Changing depth...");
-        goToDepthAndMeasure();
-    } else if (command.startsWith("B") && cmd_len == 1){
-        COM_DEBUG.println("Message received: B. Measuring battery level...");
+    if (commandReceivedFromLora.startsWith("M") && cmd_len == 3){
+        DEBUG_SERIAL.println("Message received: M. Changing depth...");
+        String numericPart = commandReceivedFromLora.substring(1);
+        int destinationDepth = numericPart.toInt();
+        goToDepthAndMeasure(destinationDepth);
+    } else if (commandReceivedFromLora.startsWith("B") && cmd_len == 1){
+        DEBUG_SERIAL.println("Message received: B. Measuring battery level...");
         measureBatteryStatus();
-    } else if (command.startsWith("S") && cmd_len == 1){
-        COM_DEBUG.println("Message received: B. Measuring solar level...");
+    } else if (commandReceivedFromLora.startsWith("S") && cmd_len == 1){
+        DEBUG_SERIAL.println("Message received: B. Measuring solar level...");
         measureSolarStatus();
     } else {
-        COM_DEBUG.println("Message doesn't start with M, B or S");
+        DEBUG_SERIAL.println("Message doesn't start with M, B or S");
     }
 }
 
@@ -28,35 +30,31 @@ void reactToCommand(){
  * When inside the tolerance a message is sent to the cannister to start measuring.
  * 
  */
-void goToDepthAndMeasure() {
-    // Extracts the number part of the command and converts to an int
-    String numericPart = command.substring(1);
-    int destinationDepth = numericPart.toInt();
-
+void goToDepthAndMeasure(int destinationDepth) {
     // Variables to make code more readable
-    int upperLimit = destinationDepth + depthThreshold;
-    int lowerLimit = destinationDepth - depthThreshold;
+    int upperLimit = destinationDepth + DEPTH_THRESHOLD;
+    int lowerLimit = destinationDepth - DEPTH_THRESHOLD;
     bool insideTolerance = depth < upperLimit && depth > lowerLimit;
 
     // If destination depth is not reached move in the correct direction
     if (depth > upperLimit && !insideTolerance){
         moveCableMotorUp();
-        COM_DEBUG.println("Outside tolerance - moving up");
+        DEBUG_SERIAL.println("Outside tolerance - moving up");
     } else if (depth < lowerLimit && !insideTolerance){
         moveCableMotorDown();
-        COM_DEBUG.println("Outside tolerance - moving down");
+        DEBUG_SERIAL.println("Outside tolerance - moving down");
     } else {
         turnOffCableMotor();
-        COM_DEBUG.println("Dont know what depth to go to...");
+        DEBUG_SERIAL.println("Dont know what depth to go to...");
     }
 
     // If destination depth is reached the cannister is told to start measuring.
     if (insideTolerance){
-        COM_CANNISTER.println('M');
-        COM_DEBUG.println("Inside tolerance - sending 'M' to cannister");
+        CANNISTER_SERIAL.println('M');
+        DEBUG_SERIAL.println("Inside tolerance - sending 'M' to cannister");
     } else {
-        COM_CANNISTER.println('M'); // CHANGE LATER!!!
-        COM_DEBUG.println("Outside tolerance - sending 'W' to cannister.");
+        CANNISTER_SERIAL.println('M'); // CHANGE LATER!!!
+        DEBUG_SERIAL.println("Outside tolerance - sending 'W' to cannister.");
     }
 }
 

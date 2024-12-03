@@ -2,51 +2,52 @@
 #include "modules.h"
 
 // Function declaration
-void parseDataFromCannister(String);
+void    parseDataFromCannister(String);
 
-// Data parsing
-void receiveFromUARTAndPrintToSDCard();
 
 // Control
-void goToDepthAndMeasure();
-void enableManualMode();
-void reactToCommand();
+void    goToDepthAndMeasure(int);
+void    enableManualMode();
+void    reactToCommand(String);
 
 // Motors
-void measureMotorPins();
-void moveCableMotorUp();
-void moveCableMotorDown();
-void turnOffCableMotor();
-void setupBrakeMotor();
-void brakeCable();
-void unbrakeCable();
-void shutOffBrakeMotor();
-void turnOnBrakeMotor();
+void    measureMotorPins();
+void    moveCableMotorUp();
+void    moveCableMotorDown();
+void    turnOffCableMotor();
+void    setupBrakeMotor();
+void    brakeCable();
+void    unbrakeCable();
+void    shutOffBrakeMotor();
+void    turnOnBrakeMotor();
 
 // LoRa
-bool sendCommandAndReceiveResponse(const String &command, const char *expectedResponse = "OK", unsigned long timeout = 2000);
-bool LoRaConfigure();
-String stringToHex(const String&);
+bool    sendCommandAndReceiveResponse(const String &command, const char *expectedResponse = "OK", unsigned long timeout = 2000);
+bool    LoRaConfigure();
+String  stringToHex(const String&);
 
 // Pressure sensor
-void measureRefPressure(float*);
-void setupPressureSensor();
+float   measureRefPressure();
+void    setupPressureSensor();
 
 // RTC
-void setRTCTimeFromSerialInput();
-void showRTCTimeSettings();
-void inputDateFromSerial();
+void    setRTCTimeFromSerialInput();
+void    showRTCTimeSettings();
+void    inputDateFromSerial();
 
 // SD
-void printDataToSDCard(String);
-void setUpSDCard();
+void    printDataToSDCard(String);
+void    setUpSDCard();
 
 // Battery & Solar
-void measureBatteryStatus();
-void measureSolarStatus();
+void    measureBatteryStatus();
+void    measureSolarStatus();
 
 // General
-void calculateDepth();
-void turnOnCannister();
-void setupCommunication();
-void runAllSetups();
+float   calculateDepth(float, float);
+void    turnOnCannister();
+void    setupCommunication();
+void    runAllSetups();
+void    outputDepth(float, float);
+char*   receiveDataFromCannisterAndRespond(unsigned long);
+bool    sendCommandToCannisterAndReceiveResponse(const char*, unsigned long);

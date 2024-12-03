@@ -12,65 +12,76 @@ S: Check solar status
 
 #include "./setup/modules.h"
 
-/*
+
 void setup() {
-    //runAllSetups();
     initAllPins();
     turnOnCannister();
-    //turnOffCableMotor();
+    turnOffCableMotor();
     setupCommunication();
-    //setupBrakeMotor();
-    //setupPressureSensor();
-    //setUpSDCard(); 
+    setupBrakeMotor();
+    setupPressureSensor();
+    setUpSDCard();
 }
 
 void loop() {
-    //measureRefPressure(&referencePressure);
+    float referencePressure = measureRefPressure();
     
-    command = "M10"; // Set manually
+    String commandReceivedFromLora = "M10"; // Set manually right now
 
-    if (COM_CANNISTER.available() > 0){
-        COM_CANNISTER.println(command);
-    } else {
-        COM_DEBUG.println("Couldn't print to cannister");
-    }
     // Check the manual buttons, S -> Manual mode, R -> Automatic mode
     measureMotorPins();
     unbrakeCable();             // Unbrakes the cable if it is braked.
     if (manualMode){
         enableManualMode();
     } else {
-        reactToCommand();
+        reactToCommand(commandReceivedFromLora);
     }
 
-    // Receives data from cannister via UART, prints to debug monitor and SD card
-    receiveFromUARTAndPrintToSDCard();
+    bool sendCheck = sendCommandToCannisterAndReceiveResponse(commandReceivedFromLora.c_str(), 5000);
+    DEBUG_SERIAL.println(sendCheck ? "Command sent and acknowledgement returned back." : "No connection to cannister.");
 
-    // Calculates the depth (change ref_pressure to buoy pressure)
-    calculateDepth();
+    char* dataString = receiveDataFromCannisterAndRespond(5000);
+
+    parseDataFromCannister(dataString);
+    printTimeToSD();
+    printDataToSDCard(dataString);
+
+    // Calculates the depth and outputs with reference pressure
+    depth = calculateDepth(referencePressure, outsidePressure);
+    outputDepth(depth, referencePressure);
+}
+
+bool sendCommandToCannisterAndReceiveResponse(const char* message, unsigned long timeout){
+    CANNISTER_SERIAL.println(message);      // Send message to buoy
     
+    unsigned long startTime = millis();
+    // Checks for response before set time out
+    while (millis() - startTime < timeout) {
+        if (CANNISTER_SERIAL.available() > 0) {
+            char response[10];
+            CANNISTER_SERIAL.readBytesUntil('\n', response, sizeof(response));
+            response[9] = '\0'; // Ensure null-termination
+
+            if (strcmp(response, "ACK") == 0) {
+                return true;  // Acknowledgement received
+            }
+        }
+    }
+    return false;  // Timeout or response not received
 }
-*/
 
+char* receiveDataFromCannisterAndRespond(unsigned long timeout){
+    unsigned long startTime = millis();
+    static char received[256];
 
-void setup() {
-  Serial.begin(9600);
-  Serial2.begin(9600);
-
-  Serial.println("Mega B: Sending handshake...");
-
-  // Send handshake signal to Mega A
-  Serial2.println("READY");
-  Serial.println("Mega B: Handshake sent. Ready to receive data.");
-}
-
-void loop() {
-  // Check if data is available from Mega A
-  if (Serial2.available() > 0) {
-    String receivedMessage = Serial2.readString();
-    Serial.print("Received from Mega A: ");
-    Serial.println(receivedMessage);
-  } else {
-    Serial.println("No connection...");
-  }
+    // Checks for response before set timeout
+    while (millis() - startTime < timeout) {
+        if (CANNISTER_SERIAL.available() > 0) {
+            CANNISTER_SERIAL.readBytesUntil('\n', received, sizeof(received));
+            received[sizeof(received) - 1] = '\0'; // Ensure null-termination
+            CANNISTER_SERIAL.println("ACK");
+            break;  // Exit loop after receiving data
+        }
+    }
+    return received;  // Return received data
 }

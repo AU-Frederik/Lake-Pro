@@ -5,44 +5,55 @@
  * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
  *
  */
-void initSensors(){
-    // Initialize HP20x, SCD30 and DHT22 sensors
-    HP20x.begin();
-    scd30.initialize();
-    dht.begin();
-    
-    // Sets up the ADC, BAR100 and TSYS01 sensors and holds program until they are initialized.
-    while (!allSensorsReady){
-        if(ads.begin()) {
-            isADSReady = true;
-            // Sets gain on the ADC
-            ads.setGain(GAIN_TWOTHIRDS);
-        }
-        delay(500);
-
-        outsidePressureSensor.init();
-        if(outsidePressureSensor.isInitialized()){
-            isOutsidePressureSensorReady = true;
-            // Sets the fluid density to fresh water
-            outsidePressureSensor.setFluidDensity(997); }
-        delay(500);
-
-        if (!isADSReady)                    {COM_DEBUG.println("ADC device failed to initialize!");}
-        if (!isOutsidePressureSensorReady)  {COM_DEBUG.println("BAR100 device failed to initialize!");}
-        allSensorsReady = isADSReady && isOutsidePressureSensorReady;
-    }
-}
+void initializeDHT22(){dht22.begin();}
 
 /**
  * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
  *
  */
 bool isMethaneSensorPreheated() {
-    myTime = startTime + millis(); // Time is added each iteration.
-    if (myTime < timeToPreheat){
-        COM_DEBUG.println("Preheating methane sensor...");
+    myTime = setupTime + millis(); // Time is added each iteration.
+    if (myTime < TIME_TO_PREHEAT){
+        DEBUG_SERIAL.println("Preheating methane sensor...");
         return false;
     }
-    COM_DEBUG.println("Methane sensor is now preheated.");
+    DEBUG_SERIAL.println("Methane sensor is now preheated.");
     return true;
+}
+
+/**
+ * @brief Method sets all sensor booleans to false and proceeds to check all sensors initiliazation. Initializes if they are not already initialized.
+ * 
+ */
+void checkInitializationOfSensors(){
+
+    if (HP20x.isAvailable()){
+        isHP20xReady = true;
+    } else {
+        HP20x.begin();
+    }
+
+    if (scd30.isAvailable()){
+        isSCD30Ready = true;
+    } else {
+        scd30.initialize();
+    }
+
+    if (BAR100.isInitialized()){
+        isBAR100Ready = true;
+        BAR100.setFluidDensity(FRESH_WATER_DENSITY);
+    } else {
+        BAR100.init();
+        BAR100.setFluidDensity(FRESH_WATER_DENSITY);
+    }
+
+    if (ads.begin()){
+        isADSReady = true;
+    }
+
+    // Prints availability of the sensors
+    DEBUG_SERIAL.print("HP20x: "   );      DEBUG_SERIAL.print(isHP20xReady  ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", SCD30: " );      DEBUG_SERIAL.print(isSCD30Ready  ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", BAR100: ");      DEBUG_SERIAL.print(isBAR100Ready ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", ADS: "   );      DEBUG_SERIAL.println(isADSReady  ? "Ready" : "Not ready");
 }

@@ -7,161 +7,186 @@
  * If 'M' is sent, it measures all sensors.
  *
  */
-void measureAll(){  
-    // If message is not M it will only send outsidePressure and depth
-    if (command.charAt(0) != 'M'){
-        outsidePressure_Measure(&outsidePressure, &outsideTemperature);
-        co2_SCD             = 0;
-        avg_Humidity        = 0;
-        avg_Temperature     = 0;
-        pressure_HP20       = 0;
-        CH4_sensorVolt      = 0;
-        CH4ppm              = 0;
-        return;
+char* measureAll(char command){  
+    // Empty character array of 256 bytes
+    static char sensorData[256];
+
+    // Initialize default values
+    float co2_SCD               = 0.0;
+    float temperature_SCD       = 0.0;
+    float humidity_SCD          = 0.0;
+    float pressure_HP20         = 0.0;
+    float humidity_DHT          = 0.0;
+    float temperature_DHT       = 0.0;
+    float outsidePressure       = 0.0;
+    float outsideTemperature    = 0.0;
+    float oxygenLevel           = 0.0;
+    float CH4_Sensorvolt        = 0.0;
+    float CH4ppm                = 0.0;
+    float avg_Temperature       = 0.0;
+    float avg_Humidity          = 0.0;
+
+    // If command is not "M" only outside pressure and temperature is measured
+    if (command != 'M'){
+        float* BAR100_measurements = BAR100_Measure();
+        outsidePressure = BAR100_measurements[0];
+        outsideTemperature = BAR100_measurements[1];
+    }
+    if (command == 'M') {
+        // SCD30
+        float* SCD_measurements     = SCD30_Measure();
+        co2_SCD               = SCD_measurements[0];
+        temperature_SCD       = SCD_measurements[1];
+        humidity_SCD          = SCD_measurements[2];
+
+        // HP20x
+        pressure_HP20         = HP20_Measure();
+
+        // DHT22
+        float* DHT_measurements     = DHT22_Measure();
+        humidity_DHT          = DHT_measurements[0];
+        temperature_DHT       = DHT_measurements[1];
+
+        // BAR100
+        float* BAR100_measurements  = BAR100_Measure();
+        outsidePressure       = BAR100_measurements[0];
+        outsideTemperature    = BAR100_measurements[1];
+        
+        // FD02
+        oxygenLevel           = oxygen_Measure();
+
+        // FIGARO
+        float* FIGARO_measurements  = FIGARO_Measure();
+        CH4_Sensorvolt        = FIGARO_measurements[0];
+        CH4ppm                = FIGARO_measurements[1];
+
+        // Calculate average inside temperature and humidity
+        avg_Temperature   = (temperature_DHT+temperature_SCD)/2;
+        avg_Humidity      = (humidity_DHT+humidity_SCD)/2;
     }
 
-    // Measure CO2 in ppm, Temperature in C and Humidity in %
-    SCD30_Measure(&co2_SCD, &temperature_SCD, &humidity_SCD);
+    // Formats the sensorData char array to the format:
+    // 400.55;24.15;55.78;1013.25;60.12;23.50;1005.70;22.50;20.25;2.00;1.25;23.83;57.95;
+    snprintf(sensorData, sizeof(sensorData), 
+    "%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;",
+    (double)outsidePressure, (double)outsideTemperature,
+    (double)co2_SCD, (double)temperature_SCD, (double)humidity_SCD, 
+    (double)pressure_HP20, (double)humidity_DHT, (double)temperature_DHT, 
+    (double)oxygenLevel, (double)CH4_Sensorvolt, (double)CH4ppm, 
+    (double)avg_Temperature, (double)avg_Humidity);
 
-    // Check if barometer is ready, if yes measure pressure in hPa
-    HP20_Measure(&pressure_HP20);
-
-    // Measure temperature and humidity
-    DHT22_Measure(&humidity_DHT, &temperature_DHT);
-
-    // Measure pressure outside
-    outsidePressure_Measure(&outsidePressure, &outsideTemperature);
-
-    calculateAverageTempAndHumidity(&avg_Temperature, &avg_Humidity);
-
-    // Measure oxygen using FD02
-    oxygen_Measure(&oxygenLevel);
-    
-    // Measure CH4 if over 127 hPa as this is 16% oxygen, which is needed for combustion
-    if (oxygenLevel > 127 && isMethaneSensorPreheated()) { 
-        CH4_Measure(&CH4_sensorVolt);
-        convertCH4SensorToCH4ppm(&CH4ppm);
-    } else {
-        CH4_sensorVolt = 0;
-        CH4ppm = 0;
-    }
+    return sensorData;
 }
 
 /**
  * @brief Measures CO2, temperature and humidity in the cannister using the SCD30 sensor.
- * @param co2 a float pointer to the global variable.
- * @param temperature a float pointer to the global variable.
- * @param humidity a float pointer to the global variable.
+ * @returns A pointer to a float array. Returns empty if SCD30 is not ready. 
+ * 
  */
-void SCD30_Measure(float* co2, float* temperature, float* humidity)
-{
-    int resultLen = 3;
-    // Result has CO2 on first element, Temperature on second and humidity on third
-    float resultSCD[resultLen] = {0};
+float* SCD30_Measure() {
+    static float resultSCD[3] = {0.0f, 0.0f, 0.0f};
 
-    if (scd30.isAvailable()) {
+    if (isSCD30Ready) {
         scd30.getCarbonDioxideConcentration(resultSCD);
-        *co2         = resultSCD[0];
-        *temperature = resultSCD[1];
-        *humidity    = resultSCD[2];
     }
+    return resultSCD;
 }
 
 /**
  * @brief Measures pressure on the HP20 sensor.
- * @param pressure a float pointer to the global variable.
+ * @returns The measured pressure in hPa. Returns zero if HP20x is not ready. 
  *
  */
-void HP20_Measure(float* pressure)
+float HP20_Measure()
 {
-    if(HP20x.isAvailable()) {
+    float pressure = 0;
+
+    if(isHP20xReady) {
         long readPressure = HP20x.ReadPressure();
-        *pressure = p_filter.Filter(readPressure/100.0);
-    } else {
-        *pressure = 0;
+        pressure = p_filter.Filter(readPressure/100.0);
     }
+
+    return pressure;
 }
 
 
 /**
  * @brief Measures humidity and temperature on the DHT22 sensor.
- * @param humidity - a float pointer to the global variable.
- * @param temperature a float pointer to the global variable.
+ * @returns A pointer to a float array of two elements with humidity and temperature respectively.
  *
  */
-void DHT22_Measure(float* humidity, float* temperature) 
+float* DHT22_Measure() 
 {
-    float h   = dht.readHumidity();
-    float t   = dht.readTemperature();
-
-    *humidity = isnan(h) ? 0.0 : h;  // fallback to 0.0 if NaN
-    *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
+    static float resultDHT[2] = {dht22.readHumidity(), dht22.readTemperature()};
+    return resultDHT;
 }
-
-
-/**
- * @brief Measures outside temperature on the TSYS01 sensor.
- * @param temperature a float pointer to the global variable.
- * 
- */
-void outsideTemp_Measure(float* temperature)
-{
-    outsideTempSensor.read();
-    float t = outsideTempSensor.temperature();
-    *temperature = isnan(t) ? 0.0 : t;  // fallback to 0.0 if NaN
-}
-
 
 /**
  * @brief Measures the sensor volt from the ADC connected to the Figaro sensor.
  * @param CH4 a float pointer to the global variable.
  * 
  */
-void CH4_Measure(float* CH4){
-    CH4_sensorVolt = ads.readADC_SingleEnded(0);
+float* FIGARO_Measure(){
+    float CH4_Sensorvolt = 0;
+    if (isADSReady && oxygenLevel > 127 && isMethaneSensorPreheated()){
+        CH4_Sensorvolt = ads.readADC_SingleEnded(0);
+    }
+
+    float CH4ppm = convertCH4SensorToCH4ppm(CH4_Sensorvolt);
+    static float result_FIGARO[2] = {CH4_Sensorvolt, CH4ppm};
+    return result_FIGARO;
 }
 
 
 /**
- * @brief Measures the outside pressure.
- * @param pressure a float pointer to the global variable.
+ * @brief Measures the outside pressure and temperature.
+ * @returns A pointer to a float array of two elements with outside pressure in hPa
+ * and outside temperature in Celcius respectively.
  * 
  */
-void outsidePressure_Measure(float* pressure, float* temperature) {
-    outsidePressureSensor.read();
-    *pressure = outsidePressureSensor.pressure();
-    *temperature = outsidePressureSensor.temperature();
+float* BAR100_Measure() {
+    static float resultBAR100[2] = {0.0f, 0.0f};
+
+    if (isBAR100Ready){
+        BAR100.read();
+        resultBAR100[0] = BAR100.pressure();
+        resultBAR100[1] = BAR100.temperature();
+    }
+
+    return resultBAR100;
 }
 
 
 /**
  * @brief Measures the oxygen level using FD02 with UART. 
  * For the FD02 to work it needs to receive the command '#MOXY\r'.
- * @param oxygen a float pointer to the global variable.
+ * @returns A float - the oxygen partial pressure in hPa. 
  * 
  */
-void oxygen_Measure(float *oxygen){
+float oxygen_Measure(){
     const char command[] = "#MOXY\r"; // Command as raw bytes
+    float oxygen = 0;
     // Send the command byte by byte for full control
     for (size_t i = 0; i < sizeof(command) - 1; i++) {
-        COM_FD02.write(command[i]); // Send byte to Serial
+        FD02_SERIAL.write(command[i]); // Send byte to Serial
     }
 
     // Receives response in a string ala "#MOXY 202000 303030 1"
     String response = "";
-    while (COM_FD02.available()) {
-      char incomingChar = COM_FD02.read();
+    while (FD02_SERIAL.available()) {
+      char incomingChar = FD02_SERIAL.read();
       response += incomingChar;
     }
 
-    // Parses the string and removes the first number, as this is oxygen partial pressure
+    // Parses the string and extracts the first number, as this is oxygen partial pressure
     if (response.length() > 0) {
         if (response.startsWith("#MOXY")) {
-        // Extract values
-        int space1 = response.indexOf(' ', 6); // Find first space after "#MOXY"
-        *oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
+            // Extract values
+            int space1 = response.indexOf(' ', 6); // Find first space after "#MOXY"
+            oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
         }
     }
+    return oxygen;
 }
 
 

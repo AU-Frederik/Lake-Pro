@@ -4,7 +4,6 @@
 
 /* Instances */
 KalmanFilter      p_filter;
-DHT               dht(DHT22_PIN, DHTTYPE);
+DHT               dht22(DHT22_PIN, DHTTYPE);
 Adafruit_ADS1115  ads;
-TSYS01            outsideTempSensor;
-KellerLD          outsidePressureSensor;
+KellerLD          BAR100;

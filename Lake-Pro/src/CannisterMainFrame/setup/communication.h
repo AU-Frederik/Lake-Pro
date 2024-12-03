@@ -8,7 +8,7 @@
 void setupCommunication(){
     // Setup I2C & UART to either PC or BuoyMainFrame Arduino
     Wire.begin();
-    COM_DEBUG.begin(COM_DEBUG_BAUDRATE);
-    COM_BUOY.begin(COM_BUOY_BAUDRATE);
-    COM_FD02.begin(COM_FD02_BAUDRATE, SERIAL_8N1);
+    DEBUG_SERIAL.begin(DEBUG_SERIAL_BAUDRATE);
+    BUOY_SERIAL.begin(BUOY_SERIAL_BAUDRATE);
+    FD02_SERIAL.begin(FD02_SERIAL_BAUDRATE, SERIAL_8N1);
 }

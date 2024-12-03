@@ -2,16 +2,18 @@
 
 #include "modules.h"
 
-#define DHT22_PIN 8
-#define DHTTYPE DHT22
-#define timeToPreheat 0 // 0 seconds
+#define DHT22_PIN               8
+#define DHTTYPE                 DHT22
+#define TIME_TO_PREHEAT         10000       // 10 seconds
+#define FRESH_WATER_DENSITY     997         // kg/m^3
+#define TIME_PR_ROUND           10000        // 10 seconds each sensor iteration
 
 /* Communication - Serial */
-#define COM_DEBUG           Serial
-#define COM_DEBUG_BAUDRATE  9600
+#define DEBUG_SERIAL               Serial
+#define DEBUG_SERIAL_BAUDRATE      9600
 
-#define COM_BUOY            Serial3
-#define COM_BUOY_BAUDRATE   9600
+#define BUOY_SERIAL                Serial3
+#define BUOY_SERIAL_BAUDRATE       9600
 
-#define COM_FD02            Serial1
-#define COM_FD02_BAUDRATE   19200
+#define FD02_SERIAL                Serial1
+#define FD02_SERIAL_BAUDRATE       19200

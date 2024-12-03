@@ -11,14 +11,14 @@
  */
 bool sendCommandAndReceiveResponse(const String &command, const char *expectedResponse, unsigned long timeout){
   COM_LORA.println(command);  // Send command to Wio-E5
-  COM_DEBUG.println(command);  // Debugging command
+  DEBUG_SERIAL.println(command);  // Debugging command
   
   unsigned long startTime = millis();
   // Checks for response before set time out
   while (millis() - startTime < timeout) {
     if (COM_LORA.available()) {
       String response = COM_LORA.readString();
-      COM_DEBUG.println(response);
+      DEBUG_SERIAL.println(response);
 
       // If expected response is part of the response received back it returns true
       if (response.indexOf(expectedResponse) >= 0) {
