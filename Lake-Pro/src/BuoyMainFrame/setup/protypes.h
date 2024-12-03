@@ -49,5 +49,5 @@ void    turnOnCannister();
 void    setupCommunication();
 void    runAllSetups();
 void    outputDepth(float, float);
-char*   receiveDataFromCannisterAndRespond(unsigned long);
-bool    sendCommandToCannisterAndReceiveResponse(const char*, unsigned long);
+String  receiveDataFromCannisterAndRespond();
+bool    sendCommandToCannisterAndReceiveResponse(char, unsigned long);

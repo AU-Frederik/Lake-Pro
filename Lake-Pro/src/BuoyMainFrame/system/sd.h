@@ -10,6 +10,7 @@ void setUpSDCard(){
     } else {
         DEBUG_SERIAL.println("SD card initialized.");
     }
+    
 }
 
 // Prints a float data to the file on the SD Card and a comma

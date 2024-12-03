@@ -29,6 +29,7 @@ void loop() {
     String commandReceivedFromLora = "M10"; // Set manually right now
 
     // Check the manual buttons, S -> Manual mode, R -> Automatic mode
+    /*
     measureMotorPins();
     unbrakeCable();             // Unbrakes the cable if it is braked.
     if (manualMode){
@@ -36,11 +37,12 @@ void loop() {
     } else {
         reactToCommand(commandReceivedFromLora);
     }
+    */
 
-    bool sendCheck = sendCommandToCannisterAndReceiveResponse(commandReceivedFromLora.c_str(), 5000);
+    bool sendCheck = sendCommandToCannisterAndReceiveData(commandReceivedFromLora.charAt(0));
     DEBUG_SERIAL.println(sendCheck ? "Command sent and acknowledgement returned back." : "No connection to cannister.");
 
-    char* dataString = receiveDataFromCannisterAndRespond(5000);
+    String dataString = receiveDataFromCannisterAndRespond();
 
     parseDataFromCannister(dataString);
     printTimeToSD();
@@ -51,18 +53,19 @@ void loop() {
     outputDepth(depth, referencePressure);
 }
 
-bool sendCommandToCannisterAndReceiveResponse(const char* message, unsigned long timeout){
-    CANNISTER_SERIAL.println(message);      // Send message to buoy
-    
+bool sendCommandToCannisterAndReceiveData(char command, unsigned long timeout){
+    CANNISTER_SERIAL.println(command);      // Send message to buoy
+    DEBUG_SERIAL.print("Sending command: ");
+    DEBUG_SERIAL.println(command);
+
+    String response = "";
     unsigned long startTime = millis();
     // Checks for response before set time out
     while (millis() - startTime < timeout) {
         if (CANNISTER_SERIAL.available() > 0) {
-            char response[10];
-            CANNISTER_SERIAL.readBytesUntil('\n', response, sizeof(response));
-            response[9] = '\0'; // Ensure null-termination
+            CANNISTER_SERIAL.readStringUntil('\n');
 
-            if (strcmp(response, "ACK") == 0) {
+            if (response.indexOf("ACK") >= 0) {
                 return true;  // Acknowledgement received
             }
         }
@@ -70,17 +73,17 @@ bool sendCommandToCannisterAndReceiveResponse(const char* message, unsigned long
     return false;  // Timeout or response not received
 }
 
-char* receiveDataFromCannisterAndRespond(unsigned long timeout){
+String receiveDataFromCannisterAndRespond(){
+    String received = "";
     unsigned long startTime = millis();
-    static char received[256];
 
     // Checks for response before set timeout
-    while (millis() - startTime < timeout) {
+    while (millis() - startTime < 5000){
         if (CANNISTER_SERIAL.available() > 0) {
-            CANNISTER_SERIAL.readBytesUntil('\n', received, sizeof(received));
-            received[sizeof(received) - 1] = '\0'; // Ensure null-termination
+            received = CANNISTER_SERIAL.readStringUntil('\n');
+            DEBUG_SERIAL.print("Received: ");
+            DEBUG_SERIAL.println(received);
             CANNISTER_SERIAL.println("ACK");
-            break;  // Exit loop after receiving data
         }
     }
     return received;  // Return received data
