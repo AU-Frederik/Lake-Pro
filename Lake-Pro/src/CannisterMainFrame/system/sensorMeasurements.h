@@ -7,7 +7,7 @@
  * If 'M' is sent, it measures all sensors.
  *
  */
-char* measureAll(char command){  
+String measureAll(char command){  
     // Empty character array of 256 bytes
     static char sensorData[256];
 
@@ -23,8 +23,8 @@ char* measureAll(char command){
     float oxygenLevel           = 0.0;
     float CH4_Sensorvolt        = 0.0;
     float CH4ppm                = 0.0;
-    float avg_Temperature       = 0.0;
-    float avg_Humidity          = 0.0;
+    avg_Temperature       = 0.0;
+    avg_Humidity          = 0.0;
 
     // If command is not "M" only outside pressure and temperature is measured
     if (command != 'M'){
@@ -55,8 +55,9 @@ char* measureAll(char command){
         // FD02
         oxygenLevel           = oxygen_Measure();
 
+
         // FIGARO
-        float* FIGARO_measurements  = FIGARO_Measure();
+        float* FIGARO_measurements  = FIGARO_Measure(oxygenLevel);
         CH4_Sensorvolt        = FIGARO_measurements[0];
         CH4ppm                = FIGARO_measurements[1];
 
@@ -65,17 +66,41 @@ char* measureAll(char command){
         avg_Humidity      = (humidity_DHT+humidity_SCD)/2;
     }
 
+    DEBUG_SERIAL.println("Measurements:");
+DEBUG_SERIAL.print("Outside Pressure: "); DEBUG_SERIAL.println(outsidePressure);
+DEBUG_SERIAL.print("Outside Temperature: "); DEBUG_SERIAL.println(outsideTemperature);
+DEBUG_SERIAL.print("CO2 (SCD): "); DEBUG_SERIAL.println(co2_SCD);
+DEBUG_SERIAL.print("Temperature (SCD): "); DEBUG_SERIAL.println(temperature_SCD);
+DEBUG_SERIAL.print("Humidity (SCD): "); DEBUG_SERIAL.println(humidity_SCD);
+
+/*
     // Formats the sensorData char array to the format:
     // 400.55;24.15;55.78;1013.25;60.12;23.50;1005.70;22.50;20.25;2.00;1.25;23.83;57.95;
     snprintf(sensorData, sizeof(sensorData), 
     "%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;",
     (double)outsidePressure, (double)outsideTemperature,
-    (double)co2_SCD, (double)temperature_SCD, (double)humidity_SCD, 
+    (double)co2_SCD, temperature_SCD, (double)humidity_SCD, 
     (double)pressure_HP20, (double)humidity_DHT, (double)temperature_DHT, 
     (double)oxygenLevel, (double)CH4_Sensorvolt, (double)CH4ppm, 
     (double)avg_Temperature, (double)avg_Humidity);
+*/
+    // Build the string dynamically
+    String dataString = "";
+    dataString += String(outsidePressure, 2) + ";";
+    dataString += String(outsideTemperature, 2) + ";";
+    dataString += String(co2_SCD, 2) + ";";
+    dataString += String(temperature_SCD, 2) + ";";
+    dataString += String(humidity_SCD, 2) + ";";
+    dataString += String(pressure_HP20, 2) + ";";
+    dataString += String(humidity_DHT, 2) + ";";
+    dataString += String(temperature_DHT, 2) + ";";
+    dataString += String(oxygenLevel, 2) + ";";
+    dataString += String(CH4_Sensorvolt, 2) + ";";
+    dataString += String(CH4ppm, 2) + ";";
+    dataString += String(avg_Temperature, 2) + ";";
+    dataString += String(avg_Humidity, 2) + ";";
 
-    return sensorData;
+    return dataString;
 }
 
 /**
@@ -126,11 +151,13 @@ float* DHT22_Measure()
  * @param CH4 a float pointer to the global variable.
  * 
  */
-float* FIGARO_Measure(){
+float* FIGARO_Measure(float oxygenLevel){
+
     float CH4_Sensorvolt = 0;
     if (isADSReady && oxygenLevel > 127 && isMethaneSensorPreheated()){
         CH4_Sensorvolt = ads.readADC_SingleEnded(0);
     }
+
 
     float CH4ppm = convertCH4SensorToCH4ppm(CH4_Sensorvolt);
     static float result_FIGARO[2] = {CH4_Sensorvolt, CH4ppm};
@@ -148,8 +175,13 @@ float* BAR100_Measure() {
     static float resultBAR100[2] = {0.0f, 0.0f};
 
     if (isBAR100Ready){
+        delay(100);
         BAR100.read();
+        delay(100);
         resultBAR100[0] = BAR100.pressure();
+        DEBUG_SERIAL.println(BAR100.pressure());
+        
+        BAR100.read();
         resultBAR100[1] = BAR100.temperature();
     }
 
@@ -186,6 +218,8 @@ float oxygen_Measure(){
             oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
         }
     }
+    DEBUG_SERIAL.println(response);
+    DEBUG_SERIAL.println(oxygen);
     return oxygen;
 }
 

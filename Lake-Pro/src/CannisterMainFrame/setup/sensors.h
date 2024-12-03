@@ -5,7 +5,17 @@
  * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
  *
  */
-void initializeDHT22(){dht22.begin();}
+
+void initAllSensors() {
+    BAR100.init();
+    
+    dht22.begin();
+
+    if (ads.begin()) { 
+        ads.setGain(GAIN_TWOTHIRDS);
+        isADSReady = true;
+    }
+}
 
 /**
  * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
@@ -27,6 +37,7 @@ bool isMethaneSensorPreheated() {
  */
 void checkInitializationOfSensors(){
 
+
     if (HP20x.isAvailable()){
         isHP20xReady = true;
     } else {
@@ -47,9 +58,8 @@ void checkInitializationOfSensors(){
         BAR100.setFluidDensity(FRESH_WATER_DENSITY);
     }
 
-    if (ads.begin()){
-        isADSReady = true;
-    }
+
+
 
     // Prints availability of the sensors
     DEBUG_SERIAL.print("HP20x: "   );      DEBUG_SERIAL.print(isHP20xReady  ? "Ready" : "Not ready");
