@@ -7,7 +7,7 @@
  * @returns CH4 as ppm.
  *
  */
-float convertCH4SensorToCH4ppm(float CH4ppm){
+float convertCH4SensorToCH4ppm(float CH4_sensorVolt){
       //CH4ppm conversion
     float Pws = 0;
     float Pw = 0;

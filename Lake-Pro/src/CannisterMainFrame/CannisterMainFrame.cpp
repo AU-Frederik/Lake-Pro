@@ -19,7 +19,8 @@ void setup()
 {
     setupTime = millis();   // Starts the time
     setupCommunication();   // Sets up I2C and Serial communication
-    initializeDHT22();      // Initiliazes all sensors
+    initAllSensors();       // Initiliazes all sensors
+    
 }
 
 void loop(){
@@ -27,16 +28,19 @@ void loop(){
     // Receive command
     // Measure on all sensors that are initialized
     checkInitializationOfSensors();
-    unsigned long loopTime = millis();
+
+    
+    //unsigned long loopTime = millis();
     char command = receiveCommandFromBuoyAndSendResponse();
-    char* measurements = measureAll(command);
+    String measurements = measureAll(command);
     bool sendCheck = sendToBuoyAndReceiveResponse(measurements, 5000);
     DEBUG_SERIAL.println(sendCheck ? "Sent data and received ACK" : "Sending data failed.");
     //delay(abs(loopTime - TIME_PR_ROUND)); // Delay so that the loop takes exactly 10 seconds
     delay(3000);
 }
 
- bool sendToBuoyAndReceiveResponse(const char* message, unsigned long timeout){
+ bool sendToBuoyAndReceiveResponse(String message, unsigned long timeout){
+    DEBUG_SERIAL.println(message);
     BUOY_SERIAL.println(message);      // Send message to buoy
     
     unsigned long startTime = millis();

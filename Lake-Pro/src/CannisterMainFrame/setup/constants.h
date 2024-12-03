@@ -4,7 +4,7 @@
 
 #define DHT22_PIN               8
 #define DHTTYPE                 DHT22
-#define TIME_TO_PREHEAT         10000       // 10 seconds
+#define TIME_TO_PREHEAT         1000       // 10 seconds
 #define FRESH_WATER_DENSITY     997         // kg/m^3
 #define TIME_PR_ROUND           10000        // 10 seconds each sensor iteration
 
