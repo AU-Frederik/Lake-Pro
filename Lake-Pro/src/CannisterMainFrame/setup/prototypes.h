@@ -10,9 +10,8 @@ float*  BAR100_Measure();
 float   oxygen_Measure();
 float   convertCH4SensorToCH4ppm(float);
 String  measureAll(char);
-char    receiveCommandFromBuoyAndSendResponse();
-bool    sendToBuoyAndReceiveResponse(String, unsigned long);
 void    initAllSensors();
-
+void sendSensorDataToBuoy(String);
+char receiveCommandFromBuoy();
 void    checkInitializationOfSensors();
 bool    isMethaneSensorPreheated();

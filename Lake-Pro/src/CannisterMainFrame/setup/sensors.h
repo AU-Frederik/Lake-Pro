@@ -24,10 +24,8 @@ void initAllSensors() {
 bool isMethaneSensorPreheated() {
     myTime = setupTime + millis(); // Time is added each iteration.
     if (myTime < TIME_TO_PREHEAT){
-        DEBUG_SERIAL.println("Preheating methane sensor...");
         return false;
     }
-    DEBUG_SERIAL.println("Methane sensor is now preheated.");
     return true;
 }
 
@@ -36,8 +34,6 @@ bool isMethaneSensorPreheated() {
  * 
  */
 void checkInitializationOfSensors(){
-
-
     if (HP20x.isAvailable()){
         isHP20xReady = true;
     } else {
@@ -57,9 +53,6 @@ void checkInitializationOfSensors(){
         BAR100.init();
         BAR100.setFluidDensity(FRESH_WATER_DENSITY);
     }
-
-
-
 
     // Prints availability of the sensors
     DEBUG_SERIAL.print("HP20x: "   );      DEBUG_SERIAL.print(isHP20xReady  ? "Ready" : "Not ready");

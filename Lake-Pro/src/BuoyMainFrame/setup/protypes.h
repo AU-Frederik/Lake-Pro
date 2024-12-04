@@ -49,5 +49,8 @@ void    turnOnCannister();
 void    setupCommunication();
 void    runAllSetups();
 void    outputDepth(float, float);
-String  receiveDataFromCannisterAndRespond();
-bool    sendCommandToCannisterAndReceiveResponse(char, unsigned long);
+String  sendCommandToCannisterAndReceiveSensorData(char, unsigned long);
+
+
+float calculateStandardDeviation(float*, unsigned int);
+void updateCH4SensorVoltHistory(float);

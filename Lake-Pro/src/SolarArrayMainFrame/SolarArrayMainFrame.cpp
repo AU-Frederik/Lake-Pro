@@ -19,6 +19,7 @@ void loop() {
  * @brief Follows the sun according to a difference of LDR values using pitch and yaw motors.
  * 
  */
+/*
 void calibratePosition() {
     readLDRSensors();
     
@@ -84,4 +85,66 @@ void calibratePosition() {
         if (yawCalibrated && pitchCalibrated){break;}
     }
 
+}*/
+
+
+// New version
+// If the system measures 3 consecutive stable readings for yaw and pitch, it stops moving.
+// Each measurement is delayed 500ms to allow system to equilibrium.
+// Adjusted beginThreshold from 50->40 and stopThreshold from 5->10
+
+void calibratePosition() {
+    const int stabilizationDelay = 500;             // Milliseconds to stabilize before rechecking
+    const int stableReadings = 3;                   // Number of consecutive readings within stopLimit to consider calibrated
+    int yawStableCount = 0, pitchStableCount = 0;   // Counters for stable readings
+
+    while (true) {
+        readLDRSensors();
+        int yawDifference = LDR_WEST_VALUE - LDR_EAST_VALUE;
+        int pitchDifference = LDR_NORTH_VALUE - LDR_SOUTH_VALUE;
+
+        // Yaw calibration
+        if (abs(yawDifference) > beginThreshold) {
+            yawStableCount = 0; // Begin moving, reset stability counter
+            if (yawDifference > 0) {
+                DEBUG_SERIAL.println("Turning Yaw CW");
+                turnYawCW();
+            } else {
+                DEBUG_SERIAL.println("Turning Yaw CCW");
+                turnYawCCW();
+            }
+        } else if (abs(yawDifference) < stopThreshold) {
+            yawStableCount++;
+            if (yawStableCount >= stableReadings) {
+                DEBUG_SERIAL.println("Turning Yaw off");
+                turnYawOff();
+            }
+        }
+
+        // Pitch calibration
+        if (abs(pitchDifference) > beginThreshold) {
+            pitchStableCount = 0;  // Begin moving, reset stability counter
+            if (pitchDifference > 0) {
+                DEBUG_SERIAL.println("Turning Pitch Up");
+                turnPitchUp();
+            } else {
+                DEBUG_SERIAL.println("Turning Pitch Down");
+                turnPitchDown();
+            }
+        } else if (abs(pitchDifference) < stopThreshold) {
+            pitchStableCount++;
+            if (pitchStableCount >= stableReadings) {
+                DEBUG_SERIAL.println("Turning Pitch off");
+                turnPitchOff();
+            }
+        }
+
+        // Exit loop if both yaw and pitch are stable for enough consecutive readings
+        if (yawStableCount >= stableReadings && pitchStableCount >= stableReadings) {
+            DEBUG_SERIAL.println("Calibration Complete");
+            break;
+        }
+
+        delay(stabilizationDelay);  // Allow time for the system to stabilize before next check
+    }
 }

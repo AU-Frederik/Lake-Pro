@@ -20,51 +20,41 @@ void setup()
     setupTime = millis();   // Starts the time
     setupCommunication();   // Sets up I2C and Serial communication
     initAllSensors();       // Initiliazes all sensors
-    
 }
 
 void loop(){
+    unsigned long loopTime = millis();
 
-    // Receive command
-    // Measure on all sensors that are initialized
     checkInitializationOfSensors();
 
+    char command = receiveCommandFromBuoy();
     
-    //unsigned long loopTime = millis();
-    char command = receiveCommandFromBuoyAndSendResponse();
-    String measurements = measureAll(command);
-    bool sendCheck = sendToBuoyAndReceiveResponse(measurements, 5000);
-    DEBUG_SERIAL.println(sendCheck ? "Sent data and received ACK" : "Sending data failed.");
-    //delay(abs(loopTime - TIME_PR_ROUND)); // Delay so that the loop takes exactly 10 seconds
-    delay(3000);
-}
+    String sensorDataString = measureAll(command);
 
- bool sendToBuoyAndReceiveResponse(String message, unsigned long timeout){
-    DEBUG_SERIAL.println(message);
-    BUOY_SERIAL.println(message);      // Send message to buoy
-    
-    unsigned long startTime = millis();
-    // Checks for response before set time out
-    while (millis() - startTime < timeout) {
-        if (BUOY_SERIAL.available() > 0) {
-            char response[10];
-            BUOY_SERIAL.readBytesUntil('\n', response, sizeof(response));
-            response[sizeof(response) - 1] = '\0'; // Ensure null-termination
+    sendSensorDataToBuoy(sensorDataString);
 
-            if (strcmp(response, "ACK") == 0) {
-                return true;
-            }
-        }
+    unsigned long timeElapsed = millis() - loopTime;  // Time spent in the loop
+    if (timeElapsed < TIME_PR_ROUND) {
+        delay(TIME_PR_ROUND - timeElapsed);
     }
-    return false;  // Timeout or response not received
+
+    DEBUG_SERIAL.print("Time elapsed in loop: ");
+    DEBUG_SERIAL.println(timeElapsed);
 }
 
-char receiveCommandFromBuoyAndSendResponse(){
+void sendSensorDataToBuoy(String sensorDataString){
+    if (BUOY_SERIAL.available() > 0){
+        BUOY_SERIAL.println(sensorDataString);
+        DEBUG_SERIAL.print("Sending data to buoy: ");
+        DEBUG_SERIAL.println(sensorDataString);
+    }
+}
+
+char receiveCommandFromBuoy(){
     char command = '\0';  // Default to null character
 
     if (BUOY_SERIAL.available() > 0) {
         command = BUOY_SERIAL.read();  // Read a single character
-        BUOY_SERIAL.println("ACK");  // Acknowledge the received command
     }
 
     return command;

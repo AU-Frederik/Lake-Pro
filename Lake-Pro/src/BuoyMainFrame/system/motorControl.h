@@ -34,9 +34,16 @@ void turnOffCableMotor(){
  * 
  */
 void measureMotorPins(){
-    manualMode   = digitalRead(MOTOR_SWITCH_AUT);
     turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
     turnMotorCW  = digitalRead(MOTOR_BUTTON_RIGHT);
+    
+    if (turnMotorCCW && turnMotorCW) {
+        if (manualMode){
+            manualMode = false;
+        } else {
+            manualMode = true;
+        }
+    }
 }
 
 

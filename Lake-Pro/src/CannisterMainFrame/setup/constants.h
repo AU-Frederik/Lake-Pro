@@ -6,7 +6,7 @@
 #define DHTTYPE                 DHT22
 #define TIME_TO_PREHEAT         1000       // 10 seconds
 #define FRESH_WATER_DENSITY     997         // kg/m^3
-#define TIME_PR_ROUND           10000        // 10 seconds each sensor iteration
+#define TIME_PR_ROUND           3000        // 10 seconds each sensor iteration
 
 /* Communication - Serial */
 #define DEBUG_SERIAL               Serial

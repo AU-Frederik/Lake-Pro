@@ -61,6 +61,10 @@ void parseDataFromCannister(String data) {
     DEBUG_SERIAL.print(outsidePressure);       DEBUG_SERIAL.print("\t \t"); 
     DEBUG_SERIAL.print(CH4_sensorVolt);        DEBUG_SERIAL.print("\t \t");
     DEBUG_SERIAL.println(CH4ppm);
+
+
+    DEBUG_SERIAL.print("In Equilibrium: ");
+    DEBUG_SERIAL.println(inEquilibrium ? "Yes" : "No");
 }
 
 /**

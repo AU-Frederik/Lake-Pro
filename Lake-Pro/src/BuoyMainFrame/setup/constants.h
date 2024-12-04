@@ -2,6 +2,7 @@
 #include "modules.h"
 
 #define MAX_FLOATS                  9  // Number of sensor data that we will receive
+#define NUM_VALUES                  10 // Amount of CH4 sensor volts to calculate the standard deviation from.
 #define SENSOR_DATA_FILENAME        "results.txt"
 #define DEPTH_THRESHOLD             0.1
 

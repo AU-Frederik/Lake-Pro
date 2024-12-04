@@ -7,9 +7,7 @@
  * If 'M' is sent, it measures all sensors.
  *
  */
-String measureAll(char command){  
-    // Empty character array of 256 bytes
-    static char sensorData[256];
+String measureAll(char command){
 
     // Initialize default values
     float co2_SCD               = 0.0;
@@ -66,25 +64,7 @@ String measureAll(char command){
         avg_Humidity      = (humidity_DHT+humidity_SCD)/2;
     }
 
-    DEBUG_SERIAL.println("Measurements:");
-DEBUG_SERIAL.print("Outside Pressure: "); DEBUG_SERIAL.println(outsidePressure);
-DEBUG_SERIAL.print("Outside Temperature: "); DEBUG_SERIAL.println(outsideTemperature);
-DEBUG_SERIAL.print("CO2 (SCD): "); DEBUG_SERIAL.println(co2_SCD);
-DEBUG_SERIAL.print("Temperature (SCD): "); DEBUG_SERIAL.println(temperature_SCD);
-DEBUG_SERIAL.print("Humidity (SCD): "); DEBUG_SERIAL.println(humidity_SCD);
-
-/*
-    // Formats the sensorData char array to the format:
-    // 400.55;24.15;55.78;1013.25;60.12;23.50;1005.70;22.50;20.25;2.00;1.25;23.83;57.95;
-    snprintf(sensorData, sizeof(sensorData), 
-    "%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;",
-    (double)outsidePressure, (double)outsideTemperature,
-    (double)co2_SCD, temperature_SCD, (double)humidity_SCD, 
-    (double)pressure_HP20, (double)humidity_DHT, (double)temperature_DHT, 
-    (double)oxygenLevel, (double)CH4_Sensorvolt, (double)CH4ppm, 
-    (double)avg_Temperature, (double)avg_Humidity);
-*/
-    // Build the string dynamically
+    // Build the dataString
     String dataString = "";
     dataString += String(outsidePressure, 2) + ";";
     dataString += String(outsideTemperature, 2) + ";";
@@ -152,15 +132,21 @@ float* DHT22_Measure()
  * 
  */
 float* FIGARO_Measure(float oxygenLevel){
+    static float result_FIGARO[2] = {0.0f, 0.0f};
+
+    DEBUG_SERIAL.print("Oxygen level inside Figaro_measure: ");
+    DEBUG_SERIAL.println(oxygenLevel);
 
     float CH4_Sensorvolt = 0;
     if (isADSReady && oxygenLevel > 127 && isMethaneSensorPreheated()){
         CH4_Sensorvolt = ads.readADC_SingleEnded(0);
+        DEBUG_SERIAL.print("Measuring CH4 sensor volt: ");
+        DEBUG_SERIAL.println(CH4_Sensorvolt);
     }
 
-
     float CH4ppm = convertCH4SensorToCH4ppm(CH4_Sensorvolt);
-    static float result_FIGARO[2] = {CH4_Sensorvolt, CH4ppm};
+    result_FIGARO[0] = CH4_Sensorvolt;
+    result_FIGARO[1] = CH4ppm;
     return result_FIGARO;
 }
 
@@ -175,13 +161,8 @@ float* BAR100_Measure() {
     static float resultBAR100[2] = {0.0f, 0.0f};
 
     if (isBAR100Ready){
-        delay(100);
         BAR100.read();
-        delay(100);
         resultBAR100[0] = BAR100.pressure();
-        DEBUG_SERIAL.println(BAR100.pressure());
-        
-        BAR100.read();
         resultBAR100[1] = BAR100.temperature();
     }
 
@@ -218,7 +199,8 @@ float oxygen_Measure(){
             oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
         }
     }
-    DEBUG_SERIAL.println(response);
+
+    DEBUG_SERIAL.print("Oxygen level in oxygen_Measure: ");
     DEBUG_SERIAL.println(oxygen);
     return oxygen;
 }
