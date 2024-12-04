@@ -10,7 +10,7 @@ float BatteryVoltage() {
 
   float voltageRead = voltageInt * 5.0f / 1024.0f;
 
-  float voltageBattery = voltageRead * 12.0f / 3.0f + batteryVoltageOffset;
+  float voltageBattery = voltageRead * 12.0f / 3.0f + BATTERY_VOLTAGE_OFFSET;
 
   return voltageBattery;
 }
@@ -26,7 +26,7 @@ int BatteryLevel() {
   if (batteryVoltage < BATTERY_VOLTAGE_MIN) return 0;
   if (batteryVoltage > BATTERY_VOLTAGE_MAX) return 100;
 
-  float batteryLevel = batteryScaleA * batteryVoltage * batteryVoltage + batteryScaleB * batteryVoltage + batteryOffset;
+  float batteryLevel = BATTERY_SCALE_A * batteryVoltage * batteryVoltage + BATTERY_SCALE_B * batteryVoltage + BATTERY_OFFSET;
 
   return (int)batteryLevel;
 }

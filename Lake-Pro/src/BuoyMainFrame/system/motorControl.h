@@ -6,8 +6,8 @@
  * 
  */
 void moveCableMotorUp(){
-    digitalWrite(MOTOR_DOWN_PIN, LOW);
-    digitalWrite(MOTOR_UP_PIN, HIGH);
+    digitalWrite(MOTOR_DOWN_PIN, HIGH);
+    digitalWrite(MOTOR_UP_PIN, LOW);
 }
 
 
@@ -16,8 +16,8 @@ void moveCableMotorUp(){
  * 
  */
 void moveCableMotorDown(){
-    digitalWrite(MOTOR_DOWN_PIN, HIGH);
-    digitalWrite(MOTOR_UP_PIN, LOW);
+    digitalWrite(MOTOR_DOWN_PIN, LOW);
+    digitalWrite(MOTOR_UP_PIN, HIGH);
 }
 
 /**
@@ -37,11 +37,14 @@ void measureMotorPins(){
     turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
     turnMotorCW  = digitalRead(MOTOR_BUTTON_RIGHT);
     
-    if (turnMotorCCW && turnMotorCW) {
+    if (!turnMotorCCW && !turnMotorCW) {
+        delay(1500);
         if (manualMode){
             manualMode = false;
+            DEBUG_SERIAL.println("Changing to Automatic mode!");
         } else {
             manualMode = true;
+            DEBUG_SERIAL.println("Changing to Manual mode!");
         }
     }
 }
@@ -53,9 +56,9 @@ void measureMotorPins(){
  */
 void enableManualMode(){
     if (!turnMotorCCW && turnMotorCW){
-        moveCableMotorUp(); // Turn CW
+        moveCableMotorDown(); // Turn CCW
     } else if (turnMotorCCW && !turnMotorCW){
-        moveCableMotorDown();  // Turn CCW
+        moveCableMotorUp();  // Turn CW
     } else {                                  
         turnOffCableMotor();    // Don't move
     }

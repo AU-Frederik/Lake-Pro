@@ -37,13 +37,10 @@ void loop(){
     if (timeElapsed < TIME_PR_ROUND) {
         delay(TIME_PR_ROUND - timeElapsed);
     }
-
-    DEBUG_SERIAL.print("Time elapsed in loop: ");
-    DEBUG_SERIAL.println(timeElapsed);
 }
 
 void sendSensorDataToBuoy(String sensorDataString){
-    if (BUOY_SERIAL.available() > 0){
+    if (BUOY_SERIAL.available() > 0 && sensorDataString.length() > 5){
         BUOY_SERIAL.println(sensorDataString);
         DEBUG_SERIAL.print("Sending data to buoy: ");
         DEBUG_SERIAL.println(sensorDataString);

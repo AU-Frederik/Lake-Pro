@@ -24,12 +24,22 @@ float pressure_HP20;
 float outsideTemperature;
 float CH4_sensorVolt;
 float outsidePressure;
-float depth;
 float CH4ppm;
+float temperature_SCD;
+float humidity_SCD;
+float humidity_DHT;
+float temperature_DHT;
+float oxygenLevel;
+
+// Calculated
+float depth;
 
 // Motor pins
-int manualMode;
+int manualMode = true; // Start as manual
 int turnMotorCCW;
 int turnMotorCW;
 bool isCableBraked = true;
 
+bool isDestinationReached;
+int destinationDepth = depthIncrements;
+bool inEquilibrium;

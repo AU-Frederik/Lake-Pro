@@ -25,7 +25,7 @@ String measureAll(char command){
     avg_Humidity          = 0.0;
 
     // If command is not "M" only outside pressure and temperature is measured
-    if (command != 'M'){
+    if (command == 'W'){
         float* BAR100_measurements = BAR100_Measure();
         outsidePressure = BAR100_measurements[0];
         outsideTemperature = BAR100_measurements[1];
@@ -66,19 +66,22 @@ String measureAll(char command){
 
     // Build the dataString
     String dataString = "";
-    dataString += String(outsidePressure, 2) + ";";
-    dataString += String(outsideTemperature, 2) + ";";
-    dataString += String(co2_SCD, 2) + ";";
-    dataString += String(temperature_SCD, 2) + ";";
-    dataString += String(humidity_SCD, 2) + ";";
-    dataString += String(pressure_HP20, 2) + ";";
-    dataString += String(humidity_DHT, 2) + ";";
-    dataString += String(temperature_DHT, 2) + ";";
-    dataString += String(oxygenLevel, 2) + ";";
-    dataString += String(CH4_Sensorvolt, 2) + ";";
-    dataString += String(CH4ppm, 2) + ";";
-    dataString += String(avg_Temperature, 2) + ";";
-    dataString += String(avg_Humidity, 2) + ";";
+    
+    if (command == 'M' || command == 'W'){
+        dataString += String(outsidePressure, 2) + ";";
+        dataString += String(outsideTemperature, 2) + ";";
+        dataString += String(co2_SCD, 2) + ";";
+        dataString += String(temperature_SCD, 2) + ";";
+        dataString += String(humidity_SCD, 2) + ";";
+        dataString += String(pressure_HP20, 2) + ";";
+        dataString += String(humidity_DHT, 2) + ";";
+        dataString += String(temperature_DHT, 2) + ";";
+        dataString += String(oxygenLevel, 2) + ";";
+        dataString += String(CH4_Sensorvolt, 2) + ";";
+        dataString += String(CH4ppm, 2) + ";";
+        dataString += String(avg_Temperature, 2) + ";";
+        dataString += String(avg_Humidity, 2) + ";";
+    } 
 
     return dataString;
 }
@@ -122,7 +125,9 @@ float HP20_Measure()
  */
 float* DHT22_Measure() 
 {
-    static float resultDHT[2] = {dht22.readHumidity(), dht22.readTemperature()};
+    static float resultDHT[2] = {0.0f, 0.0f};
+    resultDHT[0] = dht22.readHumidity();
+    resultDHT[1] = dht22.readTemperature();
     return resultDHT;
 }
 
@@ -134,14 +139,9 @@ float* DHT22_Measure()
 float* FIGARO_Measure(float oxygenLevel){
     static float result_FIGARO[2] = {0.0f, 0.0f};
 
-    DEBUG_SERIAL.print("Oxygen level inside Figaro_measure: ");
-    DEBUG_SERIAL.println(oxygenLevel);
-
     float CH4_Sensorvolt = 0;
     if (isADSReady && oxygenLevel > 127 && isMethaneSensorPreheated()){
         CH4_Sensorvolt = ads.readADC_SingleEnded(0);
-        DEBUG_SERIAL.print("Measuring CH4 sensor volt: ");
-        DEBUG_SERIAL.println(CH4_Sensorvolt);
     }
 
     float CH4ppm = convertCH4SensorToCH4ppm(CH4_Sensorvolt);
@@ -199,9 +199,6 @@ float oxygen_Measure(){
             oxygen = response.substring(space1 + 1, 6).toFloat() * pow(10,-3);
         }
     }
-
-    DEBUG_SERIAL.print("Oxygen level in oxygen_Measure: ");
-    DEBUG_SERIAL.println(oxygen);
     return oxygen;
 }
 

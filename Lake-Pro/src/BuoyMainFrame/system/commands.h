@@ -12,8 +12,16 @@ void reactToCommand(String commandReceivedFromLora){
     if (commandReceivedFromLora.startsWith("M") && cmd_len == 3){
         DEBUG_SERIAL.println("Message received: M. Changing depth...");
         String numericPart = commandReceivedFromLora.substring(1);
-        int destinationDepth = numericPart.toInt();
-        goToDepthAndMeasure(destinationDepth);
+        int maxDepth = numericPart.toInt(); //10
+        
+        if (!isDestinationReached){
+            isDestinationReached = goToDepthAndMeasure(destinationDepth);
+        } else if (isDestinationReached && destinationDepth < maxDepth){
+            destinationDepth += depthIncrements;
+        } else if (isDestinationReached && destinationDepth >= maxDepth){
+            destinationDepth = depthIncrements;
+        }
+    
     } else if (commandReceivedFromLora.startsWith("B") && cmd_len == 1){
         DEBUG_SERIAL.println("Message received: B. Measuring battery level...");
         measureBatteryStatus();
@@ -30,9 +38,9 @@ void reactToCommand(String commandReceivedFromLora){
  * When inside the tolerance a message is sent to the cannister to start measuring.
  * 
  */
-void goToDepthAndMeasure(int destinationDepth) {
+bool goToDepthAndMeasure(int destinationDepth) {
     // Variables to make code more readable
-    int upperLimit = destinationDepth + DEPTH_THRESHOLD;
+    int upperLimit = destinationDepth + DEPTH_THRESHOLD; // Depth_threshold is in meters
     int lowerLimit = destinationDepth - DEPTH_THRESHOLD;
     bool insideTolerance = depth < upperLimit && depth > lowerLimit;
 
@@ -52,9 +60,12 @@ void goToDepthAndMeasure(int destinationDepth) {
     if (insideTolerance){
         CANNISTER_SERIAL.println('M');
         DEBUG_SERIAL.println("Inside tolerance - sending 'M' to cannister");
+        brakeCable();
+        return true;
     } else {
         CANNISTER_SERIAL.println('M'); // CHANGE LATER!!!
         DEBUG_SERIAL.println("Outside tolerance - sending 'W' to cannister.");
+        return false;
     }
 }
 

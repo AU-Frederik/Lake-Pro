@@ -20,6 +20,8 @@ void initAllPins(){
 
     // Stepper motor for brake
     pinMode(MOTOR_SLEEP_PIN,  OUTPUT);
+
+    pinMode(PA_SENSOR_BATT, INPUT);
 }
 
 /**

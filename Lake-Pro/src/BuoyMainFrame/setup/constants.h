@@ -1,7 +1,7 @@
 #pragma once
 #include "modules.h"
 
-#define MAX_FLOATS                  9  // Number of sensor data that we will receive
+#define MAX_FLOATS                  13  // Number of sensor data that we will receive
 #define NUM_VALUES                  10 // Amount of CH4 sensor volts to calculate the standard deviation from.
 #define SENSOR_DATA_FILENAME        "results.txt"
 #define DEPTH_THRESHOLD             0.1
@@ -26,7 +26,7 @@
 #define G_ACC                       9.80665 // m/s^2
 
 // Brake motor
-#define BRAKE_REVOLUTION            1
+#define BRAKE_REVOLUTION            2.6
 #define STEPS_PR_REVOLUTION         3200
 #define STEPS_TO_BRAKE              BRAKE_REVOLUTION*STEPS_PR_REVOLUTION
 #define MOTOR_SPEED                 3200
@@ -41,3 +41,6 @@
 #define BATTERY_SCALE_B             -617.39f
 #define BATTERY_OFFSET              3318.3f
 #define BATTERY_VOLTAGE_OFFSET      0.1f
+
+// Depth readings
+#define depthIncrements             1

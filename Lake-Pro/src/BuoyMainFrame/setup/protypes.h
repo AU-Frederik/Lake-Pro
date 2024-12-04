@@ -6,7 +6,7 @@ void    parseDataFromCannister(String);
 
 
 // Control
-void    goToDepthAndMeasure(int);
+bool    goToDepthAndMeasure(int);
 void    enableManualMode();
 void    reactToCommand(String);
 
@@ -49,7 +49,7 @@ void    turnOnCannister();
 void    setupCommunication();
 void    runAllSetups();
 void    outputDepth(float, float);
-String  sendCommandToCannisterAndReceiveSensorData(char, unsigned long);
+String  sendCommandToCannisterAndReceiveSensorData(char);
 
 
 float calculateStandardDeviation(float*, unsigned int);
