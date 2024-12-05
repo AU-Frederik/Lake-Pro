@@ -24,12 +24,16 @@ void setup()
 
 void loop(){
     unsigned long loopTime = millis();
+    char command = '\0';
+    String sensorDataString = "";
 
     checkInitializationOfSensors();
 
-    char command = receiveCommandFromBuoy();
+    command = receiveCommandFromBuoy();
+    DEBUG_SERIAL.print("Command received: ");
+    DEBUG_SERIAL.println(command);
     
-    String sensorDataString = measureAll(command);
+    sensorDataString = measureAll(command);
 
     sendSensorDataToBuoy(sensorDataString);
 
@@ -42,6 +46,7 @@ void loop(){
 void sendSensorDataToBuoy(String sensorDataString){
     if (BUOY_SERIAL.available() > 0 && sensorDataString.length() > 5){
         BUOY_SERIAL.println(sensorDataString);
+        printAvailabilityOfSensors();
         DEBUG_SERIAL.print("Sending data to buoy: ");
         DEBUG_SERIAL.println(sensorDataString);
     }
@@ -55,4 +60,12 @@ char receiveCommandFromBuoy(){
     }
 
     return command;
+}
+
+void printAvailabilityOfSensors(){
+    // Prints availability of the sensors
+    DEBUG_SERIAL.print("HP20x: "   );      DEBUG_SERIAL.print(isHP20xReady  ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", SCD30: " );      DEBUG_SERIAL.print(isSCD30Ready  ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", BAR100: ");      DEBUG_SERIAL.print(isBAR100Ready ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", ADS: "   );      DEBUG_SERIAL.println(isADSReady  ? "Ready" : "Not ready");
 }

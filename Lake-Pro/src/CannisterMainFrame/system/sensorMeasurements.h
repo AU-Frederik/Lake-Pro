@@ -21,8 +21,8 @@ String measureAll(char command){
     float oxygenLevel           = 0.0;
     float CH4_Sensorvolt        = 0.0;
     float CH4ppm                = 0.0;
-    avg_Temperature       = 0.0;
-    avg_Humidity          = 0.0;
+    avg_Temperature             = 0.0;
+    avg_Humidity                = 0.0;
 
     // If command is not "M" only outside pressure and temperature is measured
     if (command == 'W'){

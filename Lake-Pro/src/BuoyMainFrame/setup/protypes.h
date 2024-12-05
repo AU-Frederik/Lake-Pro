@@ -16,8 +16,8 @@ void    moveCableMotorUp();
 void    moveCableMotorDown();
 void    turnOffCableMotor();
 void    setupBrakeMotor();
-void    brakeCable();
-void    unbrakeCable();
+void    brakeCable(long);
+void    unbrakeCable(long);
 void    shutOffBrakeMotor();
 void    turnOnBrakeMotor();
 

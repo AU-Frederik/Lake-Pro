@@ -60,7 +60,7 @@ bool goToDepthAndMeasure(int destinationDepth) {
     if (insideTolerance){
         CANNISTER_SERIAL.println('M');
         DEBUG_SERIAL.println("Inside tolerance - sending 'M' to cannister");
-        brakeCable();
+        brakeCable(STEPS_TO_BRAKE);
         return true;
     } else {
         CANNISTER_SERIAL.println('M'); // CHANGE LATER!!!

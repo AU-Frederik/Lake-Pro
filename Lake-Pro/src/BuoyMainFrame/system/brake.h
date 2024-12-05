@@ -8,17 +8,18 @@
 void setupBrakeMotor(){
     stepper.setMaxSpeed(MOTOR_SPEED);
     stepper.setAcceleration(MOTOR_ACCELERATION);
+    unbrakeCable(STEPS_TO_BRAKE*0.5);             // Unbrakes the cable if it is braked.
 }
 
 /**
  * @brief Turns on the brake motor, brakes the cable if the cable is not already braked and shuts it off again.
  * 
  */
-void brakeCable() {
+void brakeCable(long steps) {
     if (isCableBraked) return;
     turnOnBrakeMotor();
     stepper.setCurrentPosition(0); // Reset the current position to 0
-    stepper.moveTo(-STEPS_TO_BRAKE);   // Move the stepper motor down
+    stepper.moveTo(-steps);   // Move the stepper motor down
 
     while (stepper.distanceToGo() != 0) { // Check remaining steps to avoid blocking loops
         stepper.run();
@@ -32,11 +33,11 @@ void brakeCable() {
  * @brief Turns on the brake motor, unbrakes the cable if the cable is braked and shuts it off again.
  * 
  */
-void unbrakeCable() {
+void unbrakeCable(long steps) {
     if (!isCableBraked) return;
     turnOnBrakeMotor();
     stepper.setCurrentPosition(0); // Reset the current position to 0
-    stepper.move(STEPS_TO_BRAKE);    // Move the stepper motor up
+    stepper.move(steps);    // Move the stepper motor up
 
     while (stepper.distanceToGo() != 0) { // Check remaining steps to avoid blocking loops
         stepper.run();

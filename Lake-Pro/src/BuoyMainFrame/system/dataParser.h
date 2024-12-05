@@ -43,8 +43,8 @@ void parseDataFromCannister(String data) {
     }
     
     // After having split the numbers, each is saved to the global variables
-    outsideTemperature  = receivedNumbers[0];
-    outsidePressure     = receivedNumbers[1];
+    outsidePressure     = receivedNumbers[0];
+    outsideTemperature  = receivedNumbers[1];
     co2_SCD             = receivedNumbers[2];
     temperature_SCD     = receivedNumbers[3];
     humidity_SCD        = receivedNumbers[4];
@@ -57,67 +57,54 @@ void parseDataFromCannister(String data) {
     avg_Temperature     = receivedNumbers[11];
     avg_Humidity        = receivedNumbers[12];
 
-    DEBUG_SERIAL.println(F("+-------------------------+-----------------+"));
-    DEBUG_SERIAL.println(F("|        Parameter        |      Value      |"));
-    DEBUG_SERIAL.println(F("+-------------------------+-----------------+"));
+    DEBUG_SERIAL.println(F("Parameter                 Value"));
+    DEBUG_SERIAL.println(F("--------------------------------"));
 
     // Print each parameter with its corresponding value
-    DEBUG_SERIAL.print(F("| Outside Temperature     | "));
-    DEBUG_SERIAL.print(receivedNumbers[0], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Outside Temperature       "));
+    DEBUG_SERIAL.println(outsideTemperature, 2);
 
-    DEBUG_SERIAL.print(F("| Outside Pressure        | "));
-    DEBUG_SERIAL.print(receivedNumbers[1], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Outside Pressure          "));
+    DEBUG_SERIAL.println(outsidePressure, 2);
 
-    DEBUG_SERIAL.print(F("| CO2 (SCD)               | "));
-    DEBUG_SERIAL.print(receivedNumbers[2], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("CO2 (SCD)                 "));
+    DEBUG_SERIAL.println(co2_SCD, 2);
 
-    DEBUG_SERIAL.print(F("| Temperature (SCD)       | "));
-    DEBUG_SERIAL.print(receivedNumbers[3], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Temperature (SCD)         "));
+    DEBUG_SERIAL.println(temperature_SCD, 2);
 
-    DEBUG_SERIAL.print(F("| Humidity (SCD)          | "));
-    DEBUG_SERIAL.print(receivedNumbers[4], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Humidity (SCD)            "));
+    DEBUG_SERIAL.println(humidity_SCD, 2);
 
-    DEBUG_SERIAL.print(F("| Pressure (HP20)         | "));
-    DEBUG_SERIAL.print(receivedNumbers[5], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Pressure (HP20)           "));
+    DEBUG_SERIAL.println(pressure_HP20, 2);
 
-    DEBUG_SERIAL.print(F("| Humidity (DHT)          | "));
-    DEBUG_SERIAL.print(receivedNumbers[6], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Humidity (DHT)            "));
+    DEBUG_SERIAL.println(humidity_DHT, 2);
 
-    DEBUG_SERIAL.print(F("| Temperature (DHT)       | "));
-    DEBUG_SERIAL.print(receivedNumbers[7], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Temperature (DHT)         "));
+    DEBUG_SERIAL.println(temperature_DHT, 2);
 
-    DEBUG_SERIAL.print(F("| Oxygen Level            | "));
-    DEBUG_SERIAL.print(receivedNumbers[8], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Oxygen Level              "));
+    DEBUG_SERIAL.println(oxygenLevel, 2);
 
-    DEBUG_SERIAL.print(F("| CH4 Sensor Voltage      | "));
-    DEBUG_SERIAL.print(receivedNumbers[9], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("CH4 Sensor Voltage        "));
+    DEBUG_SERIAL.println(CH4_sensorVolt, 2);
 
-    DEBUG_SERIAL.print(F("| CH4 ppm                 | "));
-    DEBUG_SERIAL.print(receivedNumbers[10], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("CH4 ppm                   "));
+    DEBUG_SERIAL.println(CH4ppm, 2);
 
-    DEBUG_SERIAL.print(F("| Average Temperature     | "));
-    DEBUG_SERIAL.print(receivedNumbers[11], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Average Temperature       "));
+    DEBUG_SERIAL.println(avg_Temperature, 2);
 
-    DEBUG_SERIAL.print(F("| Average Humidity        | "));
-    DEBUG_SERIAL.print(receivedNumbers[12], 2);
-    DEBUG_SERIAL.println(F("         |"));
+    DEBUG_SERIAL.print(F("Average Humidity          "));
+    DEBUG_SERIAL.println(avg_Humidity, 2);
 
-    DEBUG_SERIAL.println(F("+-------------------------+-----------------+"));
+    DEBUG_SERIAL.println(F("--------------------------------"));
 
     DEBUG_SERIAL.print("In Equilibrium: ");
     DEBUG_SERIAL.println(inEquilibrium ? "Yes" : "No");
+
 }
 
 /**

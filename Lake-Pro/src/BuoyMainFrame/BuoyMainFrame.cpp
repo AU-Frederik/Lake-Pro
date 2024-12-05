@@ -37,7 +37,6 @@ void loop() {
 
     // Check the manual buttons, S -> Manual mode, R -> Automatic mode
     measureMotorPins();
-    unbrakeCable();             // Unbrakes the cable if it is braked.
     if (manualMode){
         enableManualMode();
     } else {
@@ -46,33 +45,35 @@ void loop() {
     
     dataString = sendCommandToCannisterAndReceiveSensorData(commandReceivedFromLora.charAt(0));
 
-    parseDataFromCannister(dataString);
-    printTimeToSD();
-    printDataToSDCard(dataString);
-
-    // Calculates the depth in meters and outputs with reference pressure
-    depth = calculateDepth(referencePressure, outsidePressure);
-    outputDepth(depth, referencePressure);
-
-    DEBUG_SERIAL.print("Battery level: ");
-    DEBUG_SERIAL.println(BatteryLevel());
+    if (isSensorData && countDataReceived > 3){
+        parseDataFromCannister(dataString);
+        printTimeToSD();
+        printDataToSDCard(dataString);
+        depth = calculateDepth(referencePressure, outsidePressure);
+        outputDepth(depth, referencePressure);
+        DEBUG_SERIAL.print("Battery level: ");
+        DEBUG_SERIAL.print(BatteryLevel());
+        DEBUG_SERIAL.println(" %");
+    } else if (dataString.length() > 10 && countDataReceived <= 3) {
+        DEBUG_SERIAL.println("Waiting for sensor readings to stabilize...");
+    }
 }
 
 String sendCommandToCannisterAndReceiveSensorData(char command){
+    
     CANNISTER_SERIAL.println(command);
-    delay(500);
-    bool isSensorData = true;
+    DEBUG_SERIAL.print("Sending command: ");
+    DEBUG_SERIAL.println(command);
+    delay(1000);
     String sensorData = "";
 
     // Runs while something is received, that has more than 20 characters and runs out before set timeout
-    while (CANNISTER_SERIAL.available() > 0 && isSensorData) {
-            sensorData = CANNISTER_SERIAL.readStringUntil('\n');
-            DEBUG_SERIAL.print("Sensordata: ");
-            DEBUG_SERIAL.println(sensorData);
-            if (sensorData.length() < 20){
-                isSensorData = false;
-                DEBUG_SERIAL.println("Received incorrect data!");
-            }
+    if (CANNISTER_SERIAL.available() > 0) {
+        sensorData = CANNISTER_SERIAL.readStringUntil('\n');
+        countDataReceived++;
+        isSensorData = true;
+    } else {
+        isSensorData = false;
     }
 
     return sensorData;

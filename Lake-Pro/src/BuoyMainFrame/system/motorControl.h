@@ -57,8 +57,10 @@ void measureMotorPins(){
 void enableManualMode(){
     if (!turnMotorCCW && turnMotorCW){
         moveCableMotorDown(); // Turn CCW
+        DEBUG_SERIAL.println("Moving cannister down");
     } else if (turnMotorCCW && !turnMotorCW){
         moveCableMotorUp();  // Turn CW
+        DEBUG_SERIAL.println("Moving cannister up");
     } else {                                  
         turnOffCableMotor();    // Don't move
     }

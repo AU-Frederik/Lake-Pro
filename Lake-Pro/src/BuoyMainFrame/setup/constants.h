@@ -1,10 +1,11 @@
 #pragma once
 #include "modules.h"
 
-#define MAX_FLOATS                  13  // Number of sensor data that we will receive
+#define MAX_FLOATS                  15  // Number of sensor data that we will receive
 #define NUM_VALUES                  10 // Amount of CH4 sensor volts to calculate the standard deviation from.
 #define SENSOR_DATA_FILENAME        "results.txt"
 #define DEPTH_THRESHOLD             0.1
+#define RX_TX_STABILITY_TIME        5000
 
 /* Communication - Serial */
 #define DEBUG_SERIAL                Serial

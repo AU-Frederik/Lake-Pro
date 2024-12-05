@@ -31,6 +31,10 @@ float humidity_DHT;
 float temperature_DHT;
 float oxygenLevel;
 
+bool isSensorData;
+unsigned long startTime;
+int countDataReceived = 0;
+
 // Calculated
 float depth;
 
