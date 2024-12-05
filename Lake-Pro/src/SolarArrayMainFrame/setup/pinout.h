@@ -11,7 +11,7 @@
 #define ANALOG_ROTINY_CW    A1
 
 // LDR constants
-#define LDR_NORTH_PIN       A2
-#define LDR_SOUTH_PIN       A3
-#define LDR_EAST_PIN        A6
-#define LDR_WEST_PIN        A7
+#define LDR_NORTH_PIN       A7
+#define LDR_SOUTH_PIN       A6
+#define LDR_EAST_PIN        A2
+#define LDR_WEST_PIN        A3

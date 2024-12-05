@@ -12,6 +12,7 @@ void setup() {
 // Each loop the sensors are read and the yaw and pitch motors move towards the sun.
 void loop() {
     calibratePosition();
+    delay(1000);
 }
 
 
@@ -19,7 +20,7 @@ void loop() {
  * @brief Follows the sun according to a difference of LDR values using pitch and yaw motors.
  * 
  */
-/*
+
 void calibratePosition() {
     readLDRSensors();
     
@@ -29,8 +30,8 @@ void calibratePosition() {
     int pitchDifference  = LDR_NORTH_VALUE - LDR_SOUTH_VALUE; // Positive if North is biased
 
     // Checks if yaw or pitch needs to be calibrated = moved towards the sun
-    if (abs(yawDifference)   > beginLimit) {yawCalibrated   = false;}
-    if (abs(pitchDifference) > beginLimit) {pitchCalibrated = false;}
+    if (abs(yawDifference)   > beginThreshold) {yawCalibrated   = false;}
+    if (abs(pitchDifference) > beginThreshold) {pitchCalibrated = false;}
 
     // Do nothing if everything is already calibrated.
     if (yawCalibrated && pitchCalibrated){return;}
@@ -44,12 +45,12 @@ void calibratePosition() {
         yawDifference    = LDR_WEST_VALUE - LDR_EAST_VALUE;
         pitchDifference  = LDR_NORTH_VALUE - LDR_SOUTH_VALUE;
 
-        if (abs(yawDifference)   > beginLimit) {yawCalibrated   = false;}
-        if (abs(pitchDifference) > beginLimit) {pitchCalibrated = false;}
+        if (abs(yawDifference)   > beginThreshold) {yawCalibrated   = false;}
+        if (abs(pitchDifference) > beginThreshold) {pitchCalibrated = false;}
 
         if (!yawCalibrated) {
             
-            if (abs(yawDifference) < stopLimit) {
+            if (abs(yawDifference) < stopThreshold) {
                 DEBUG_SERIAL.println("Turning Yaw off");
                 turnYawOff();
                 yawCalibrated = true;
@@ -67,7 +68,7 @@ void calibratePosition() {
         }
 
         if (!pitchCalibrated) {
-            if (abs(pitchDifference) < stopLimit) {
+            if (abs(pitchDifference) < stopThreshold) {
                 DEBUG_SERIAL.println("Turning pitch off");
                 turnPitchOff();
                 pitchCalibrated = true;
@@ -85,7 +86,7 @@ void calibratePosition() {
         if (yawCalibrated && pitchCalibrated){break;}
     }
 
-}*/
+}
 
 
 // New version
@@ -93,9 +94,10 @@ void calibratePosition() {
 // Each measurement is delayed 500ms to allow system to equilibrium.
 // Adjusted beginThreshold from 50->40 and stopThreshold from 5->10
 
+/*
 void calibratePosition() {
     const int stabilizationDelay = 500;             // Milliseconds to stabilize before rechecking
-    const int stableReadings = 3;                   // Number of consecutive readings within stopLimit to consider calibrated
+    const int stableReadings = 3;                   // Number of consecutive readings within stopThreshold to consider calibrated
     int yawStableCount = 0, pitchStableCount = 0;   // Counters for stable readings
 
     while (true) {
@@ -148,3 +150,4 @@ void calibratePosition() {
         delay(stabilizationDelay);  // Allow time for the system to stabilize before next check
     }
 }
+*/
