@@ -82,7 +82,6 @@ String measureAll(char command){
         dataString += String(avg_Temperature, 2) + ";";
         dataString += String(avg_Humidity, 2) + ";";
     } 
-
     return dataString;
 }
 
