@@ -14,3 +14,6 @@ bool isADSReady;
 bool isHP20xReady;
 
 unsigned long setupTime;
+
+char command;
+String sensorDataString;

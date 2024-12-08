@@ -16,3 +16,4 @@ char    receiveCommandFromBuoy();
 void    checkInitializationOfSensors();
 bool    isMethaneSensorPreheated();
 void    printAvailabilityOfSensors();
+void    clearSerialBuffer();

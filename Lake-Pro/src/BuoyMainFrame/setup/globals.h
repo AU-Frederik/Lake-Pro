@@ -35,6 +35,9 @@ bool isSensorData;
 unsigned long startTime;
 int countDataReceived = 0;
 
+char command;
+String sensorDataString;
+
 // Calculated
 float depth;
 

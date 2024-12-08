@@ -33,5 +33,5 @@ float convertCH4SensorToCH4ppm(float CH4_sensorVolt){
     H2Oppm = Pw * pow(10,6)/Pressure;
     Vo = g * H2Oppm + p;
     Rs_Ro = ((Vc/CH4_sensorVolt)-1)/((Vc/Vo)-1);
-    return a*pow(Rs_Ro,b) + c*(a*pow(Rs_Ro,b))*H2Oppm + K;
+    return (a*pow(Rs_Ro,b) + c*(a*pow(Rs_Ro,b))*H2Oppm + K)/1000;
 }
