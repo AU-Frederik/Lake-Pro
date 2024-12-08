@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20th of December, 2024
+
 #pragma once
 #include "modules.h"
 
@@ -5,7 +8,6 @@
  * @brief Preheats the methane sensor for a set time. Checks every sensor iteration.
  *
  */
-
 void initAllSensors() {
     BAR100.init();
     
@@ -30,7 +32,7 @@ bool isMethaneSensorPreheated() {
 }
 
 /**
- * @brief Method sets all sensor booleans to false and proceeds to check all sensors initiliazation. Initializes if they are not already initialized.
+ * @brief Checks all sensors initiliazation. Initializes if they are not already initialized.
  * 
  */
 void checkInitializationOfSensors(){

@@ -1,12 +1,16 @@
+// Author: Mechatronics Group 3
+// Date: 20th of December, 2024
+
 #pragma once
 
 #include "modules.h"
 
+/* General constants */
 #define DHT22_PIN               8
 #define DHTTYPE                 DHT22
-#define TIME_TO_PREHEAT         1000       // 10 seconds
+#define TIME_TO_PREHEAT         60000       // 1 minute - should be longer for actual application
 #define FRESH_WATER_DENSITY     997         // kg/m^3
-#define TIME_PR_ROUND           3000        // 10 seconds each sensor iteration
+#define TIME_PR_ROUND           3000        // 3 seconds each sensor iteration
 
 /* Communication - Serial */
 #define DEBUG_SERIAL               Serial

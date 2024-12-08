@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20th of December, 2024
+
 #pragma once
 #include "../setup/modules.h"
 
@@ -34,4 +37,16 @@ float convertCH4SensorToCH4ppm(float CH4_sensorVolt){
     Vo = g * H2Oppm + p;
     Rs_Ro = ((Vc/CH4_sensorVolt)-1)/((Vc/Vo)-1);
     return (a*pow(Rs_Ro,b) + c*(a*pow(Rs_Ro,b))*H2Oppm + K)/1000;
+}
+
+/**
+ * @brief Prints the status of the sensors, ready or not ready.
+ * 
+ */
+void printAvailabilityOfSensors(){
+    // Prints availability of the sensors
+    DEBUG_SERIAL.print("HP20x: "   );      DEBUG_SERIAL.print(isHP20xReady  ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", SCD30: " );      DEBUG_SERIAL.print(isSCD30Ready  ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", BAR100: ");      DEBUG_SERIAL.print(isBAR100Ready ? "Ready" : "Not ready");
+    DEBUG_SERIAL.print(", ADS: "   );      DEBUG_SERIAL.println(isADSReady  ? "Ready" : "Not ready");
 }

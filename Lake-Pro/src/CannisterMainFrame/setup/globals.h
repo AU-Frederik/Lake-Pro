@@ -1,8 +1,10 @@
+// Author: Mechatronics Group 3
+// Date: 20th of December, 2024
+
 #pragma once
 #include "modules.h"
 
 /* Global variables */
-
 float avg_Temperature;
 float avg_Humidity;
 unsigned long myTime;
@@ -13,7 +15,9 @@ bool isSCD30Ready;
 bool isADSReady;
 bool isHP20xReady;
 
+/* Time */
 unsigned long setupTime;
 
+/* Global messages to and from buoy */
 char command;
 String sensorDataString;

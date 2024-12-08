@@ -1,10 +1,14 @@
+// Author: Mechatronics Group 3
+// Date: 20th of December, 2024
+
 #pragma once
 #include "../setup/modules.h"
 
 
 /**
- * @brief Checks if command sent from buoy is 'M'. If not sets all measurements to 0.
- * If 'M' is sent, it measures all sensors.
+ * @brief Checks if command sent from buoy is 'M' or 'W'. If not sets all measurements to 0.
+ * If 'M' is sent, it measures all sensors. If 'W' is sent only outside pressure and temperature is sent.
+ * @param command a character
  *
  */
 String measureAll(char command){
@@ -133,7 +137,7 @@ float* DHT22_Measure()
 /**
  * @brief Measures the sensor volt from the ADC connected to the Figaro sensor.
  * @param CH4 a float pointer to the global variable.
- * 
+ * @returns A float array of the CH4 sensor volt and CH4 ppm respectively.
  */
 float* FIGARO_Measure(float oxygenLevel){
     static float result_FIGARO[2] = {0.0f, 0.0f};

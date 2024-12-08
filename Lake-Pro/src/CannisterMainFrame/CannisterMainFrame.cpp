@@ -1,6 +1,5 @@
-// File: CannisterMainFrame.cpp
 // Author: Mechatronics Group 3
-// Date: 2024-10-22
+// Date: 20th of December, 2024
 
 /*
 SYSTEM CONSISTS OF: 
@@ -9,7 +8,7 @@ SYSTEM CONSISTS OF:
 - GROVE BAROMETER       PRESSURE SENSOR INSIDE)
 - TSYS01                TEMPERATURE SENSOR IN WATER
 - FIGARO NGM2611-E13    CH4 SENSOR THROUGH ADS1115
-- BAR100                OUTSIDE PRESSURE SENSOR - NOT TESTED YET
+- BAR100                OUTSIDE PRESSURE AND TEMPERATURE SENSOR
 - FD02                  OXYGEN SENSOR
 */
 
@@ -23,69 +22,23 @@ void setup()
 }
 
 void loop(){
-    unsigned long loopTime = millis();
-    char command = '\0';
-    String sensorDataString = "";
+    unsigned long loopTime = millis();                  // Measures time before loop starts
+    char command = '\0';                                // Resets command to the null character
+    String sensorDataString = "";                       // Resets the dataString
 
-    checkInitializationOfSensors();
+    checkInitializationOfSensors();                     // Checks all sensors initiliazation. Initializes if they are not already initialized.
 
-    command = receiveCommandFromBuoy();
-    DEBUG_SERIAL.print("Command received: ");
-    DEBUG_SERIAL.println(command);
-    
-    sensorDataString = measureAll(command);
+    command = receiveCommandFromBuoy();                 // Receives command from buoy and saves in a char variable
 
-    sendSensorDataToBuoy(sensorDataString);
+    sensorDataString = measureAll(command);             // Measures on all sensors depending on the command
 
-    unsigned long timeElapsed = millis() - loopTime;  // Time spent in the loop
-    if (timeElapsed < TIME_PR_ROUND) {
+    sendSensorDataToBuoy(sensorDataString);             // Send data String to the buoy using UART
+
+    unsigned long timeElapsed = millis() - loopTime;    // Time spent in the loop
+    if (timeElapsed < TIME_PR_ROUND) {                  // Delays so that the loop takes 3 seconds in total
         delay(TIME_PR_ROUND - timeElapsed);
     }
 }
 
-void sendSensorDataToBuoy(String sensorDataString){
-    if (BUOY_SERIAL.available() > 0 && sensorDataString.length() > 5){
-        BUOY_SERIAL.println(sensorDataString);
-        printAvailabilityOfSensors();
-        DEBUG_SERIAL.print("Sending data to buoy: ");
-        DEBUG_SERIAL.println(sensorDataString);
-
-        clearSerialBuffer();
-    }
-}
-
-char receiveCommandFromBuoy() {
-    char command = '\0';  // Default to no command
-
-    while (BUOY_SERIAL.available() > 0) {
-        char incoming = BUOY_SERIAL.read();
-        // Ignore newline and carriage return
-        if (incoming == '\r' || incoming == '\n') {
-            continue;
-        }
-
-        // If a valid command is found, return it
-        if (incoming == 'M' || incoming == 'W') {  // assuming M or W are valid commands
-            command = incoming;
-            break;  // Exit loop after receiving the first valid command
-        }
-    }
-
-    return command;
-}
-
-void printAvailabilityOfSensors(){
-    // Prints availability of the sensors
-    DEBUG_SERIAL.print("HP20x: "   );      DEBUG_SERIAL.print(isHP20xReady  ? "Ready" : "Not ready");
-    DEBUG_SERIAL.print(", SCD30: " );      DEBUG_SERIAL.print(isSCD30Ready  ? "Ready" : "Not ready");
-    DEBUG_SERIAL.print(", BAR100: ");      DEBUG_SERIAL.print(isBAR100Ready ? "Ready" : "Not ready");
-    DEBUG_SERIAL.print(", ADS: "   );      DEBUG_SERIAL.println(isADSReady  ? "Ready" : "Not ready");
-}
 
 
-void clearSerialBuffer() {
-    // Continuously read and discard all bytes in the serial buffer
-    while (BUOY_SERIAL.available() > 0) {
-        BUOY_SERIAL.read();  // Discard the byte
-    }
-}
