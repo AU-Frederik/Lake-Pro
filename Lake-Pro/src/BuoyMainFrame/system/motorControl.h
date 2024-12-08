@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "../setup/modules.h"
 
@@ -30,25 +33,30 @@ void turnOffCableMotor(){
 }
 
 /**
- * @brief Measures the three manual buttons on the winch.
+ * @brief Measures the two manual buttons on the winch.
  * 
  */
-void measureMotorPins(){
+void checkMotorButtons(){
     turnMotorCCW = digitalRead(MOTOR_BUTTON_DOWN);
     turnMotorCW  = digitalRead(MOTOR_BUTTON_UP);
     
+    // If both buttons are pressed in the system changes mode.
     if (!turnMotorCCW && !turnMotorCW) {
         delay(1500);
         if (manualMode){
             manualMode = false;
+            automaticMode = true;
             DEBUG_SERIAL.println("Changing to Automatic mode!");
         } else {
             manualMode = true;
-            isCableBraked = true;
-            unbrakeCable(STEPS_TO_BRAKE);
+            automaticMode = false;
+            isCableBraked = true;           // For the unbrakeCable function to work
+            unbrakeCable(STEPS_TO_BRAKE);   // Unbrakes before manual mode is set
             DEBUG_SERIAL.println("Changing to Manual mode!");
         }
     }
+
+    // Moves the motor according to button pressed
     else if (!turnMotorCW && turnMotorCCW && manualMode) {
         moveCableMotorUp();
     }
@@ -59,21 +67,3 @@ void measureMotorPins(){
         turnOffCableMotor();
     }
 }
-
-
-/**
- * @brief Only call when manualMode is true. Turns motor according to motor buttons pressed.
- * 
- */
-void enableManualMode(){
-    if (!turnMotorCCW && turnMotorCW){
-        moveCableMotorDown(); // Turn CCW
-        DEBUG_SERIAL.println("Moving cannister down");
-    } else if (turnMotorCCW && !turnMotorCW){
-        moveCableMotorUp();  // Turn CW
-        DEBUG_SERIAL.println("Moving cannister up");
-    } else {                                  
-        turnOffCableMotor();    // Don't move
-    }
-}
-

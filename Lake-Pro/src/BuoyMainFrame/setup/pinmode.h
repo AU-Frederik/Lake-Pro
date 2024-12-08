@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "modules.h"
 
@@ -21,6 +24,7 @@ void initAllPins(){
     // Stepper motor for brake
     pinMode(MOTOR_SLEEP_PIN,  OUTPUT);
 
+    // Reads on battery analog
     pinMode(PA_SENSOR_BATT, INPUT);
 }
 
@@ -30,8 +34,4 @@ void initAllPins(){
  */
 void turnOnCannister(){
     digitalWrite(CannisterON_Pin, HIGH);
-}
-
-void runAllSetups(){
-
 }

@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "modules.h"
 

@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "../setup/modules.h"
 
@@ -7,9 +10,10 @@
  * @returns Depth in metres.
  * 
  */
-float calculateDepth(float referencePressure, float outsidePressure){
+float calculateAndOutputDepth(float referencePressure, float outsidePressure){
     depth = (outsidePressure-referencePressure)/(WATER_DENSITY*G_ACC);
     depth = depth*100; // Convert to centimeters
+    outputDepth(depth, referencePressure);
     return depth;
 }
 
@@ -105,35 +109,90 @@ void parseDataFromCannister(String data) {
 
     DEBUG_SERIAL.print("In Equilibrium: ");
     DEBUG_SERIAL.println(inEquilibrium ? "Yes" : "No");
-
 }
 
 /**
- * @brief Sends the data over LoRa by first converting to a command with hexidecimals
- * @param data a String with each sensor data separated by a semicolon.
- */
-void sendDataOverLora(String data){
-    // Send back the dataString
-    String command = "AT+CMSGHEX=\"" + stringToHex(data) + "\"\r\n";
-    if (sendCommandAndReceiveResponse("Done")) {
-        DEBUG_SERIAL.println("Data string sent successfully.");
-    } else {
-        DEBUG_SERIAL.println("Failed to send data string.");
-    }
-}
-
-/**
- * @brief Converts a string to its hexadecimal representation.
+ * @brief Splits the data receive from cannister into variables and assigns to global variables. 
+ * Prints time to SD card and then prints the data to the SD card.
  * 
- * @param input The input string to convert.
- * @return String The hexadecimal representation of the input string.
  */
-String stringToHex(const String& input) {
-    String hex = "";
-    for (uint16_t i = 0; i < input.length(); i++) {
-        char c = input.charAt(i);
-        if (c < 16) hex += '0'; // Pad with 0 for single-digit hex
-        hex += String(c, HEX);
+void parseDataAndSaveToSDCard(String dataString){
+    parseDataFromCannister(dataString);
+    printTimeToSD();
+    printDataToSDCard(dataString);
+}
+
+/**
+ * @brief Send a command to the cannister and receive back sensor data.
+ * @param command a character command.
+ * @returns A string of data.
+ * 
+ */
+String sendCommandToCannisterAndReceiveSensorData(char command){
+    CANNISTER_SERIAL.print(command);
+    DEBUG_SERIAL.print("Sending command: ");
+    DEBUG_SERIAL.println(command);
+    delay(1000);
+    String sensorData = "";
+
+    // Runs while something is received, that has more than 20 characters and runs out before set timeout
+    if (CANNISTER_SERIAL.available() > 0) {
+        sensorData = CANNISTER_SERIAL.readStringUntil('\n');
+        countDataReceived++;
+        isSensorData = true;
+    } else {
+        isSensorData = false;
     }
-    return hex;
+
+    return sensorData;
+}
+
+/**
+ * @brief Calculates the standard deviation for use in finding the equilibrium point in CH4 measurements.
+ * @param values a pointer to a float array of values.
+ * @param size the amount of values in the values array.
+ * @returns The standard deviation as a float.
+ */
+float calculateStandardDeviation(float* values, unsigned int size) {
+    float sum = 0.0;
+    float mean = 0.0;
+    float stdDev = 0.0;
+    
+    // Calculate the mean
+    for (unsigned int i = 0; i < size; i++) {
+        sum += values[i];
+    }
+    mean = sum / size;
+    
+    // Calculate the standard deviation
+    for (unsigned int i = 0; i < size; i++) {
+        stdDev += pow(values[i] - mean, 2);
+    }
+    stdDev = sqrt(stdDev / size);
+    
+    return stdDev;
+}
+
+/**
+ * @brief Updates the CH4_SensorvoltHistory and checks for equilibrium in CH4 measurements
+ * @param newCH4_Sensorvolt a measurement.
+ * 
+ */
+void updateCH4SensorVoltHistory(float newCH4_Sensorvolt) {
+    // Store the new value in the history buffer
+    CH4_SensorvoltHistory[currentIndex] = newCH4_Sensorvolt;
+    currentIndex = (currentIndex + 1) % NUM_VALUES;  // Wrap around when reaching the end
+    
+    // Calculate the new standard deviation
+    float currentStdDev = calculateStandardDeviation(CH4_SensorvoltHistory, NUM_VALUES);
+    
+    // Compare the change in standard deviation
+    if (abs(currentStdDev - lastStdDev) < tolerance) {
+        inEquilibrium = true;
+    } else {
+        inEquilibrium = false;
+    }
+
+    // Update the last standard deviation
+    lastStdDev = currentStdDev;
 }

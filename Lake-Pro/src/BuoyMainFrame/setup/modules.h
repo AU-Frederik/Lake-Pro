@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 
 // Libraries
@@ -27,6 +30,5 @@
 #include "../system/motorControl.h"
 #include "../system/commands.h"
 #include "../system/brake.h"
-#include "../system/lora.h"
 #include "../system/pressureSensor.h"
 #include "../system/battery.h"

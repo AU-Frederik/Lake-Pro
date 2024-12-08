@@ -1,7 +1,14 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "../setup/modules.h"
 
-// Sets up SD Card on CSPin
+
+/**
+ * @brief Sets up the SD card on CSPin
+ * 
+ */
 void setUpSDCard(){
     // Initialize SD card
     if (!SD.begin(CSPin)) {
@@ -13,7 +20,12 @@ void setUpSDCard(){
     
 }
 
-// Prints a float data to the file on the SD Card and a comma
+
+/**
+ * @brief Print data to the SD card
+ * @param data a string of data
+ * 
+ */
 void printDataToSDCard(String data) {
     myFile = SD.open(SENSOR_DATA_FILENAME, FILE_WRITE);
     if (myFile) {
@@ -22,17 +34,4 @@ void printDataToSDCard(String data) {
         DEBUG_SERIAL.println("Error saving data to file on SD card.");
     }
     myFile.close();
-}
-
-void printDataOnSDCard(){
-    myFile = SD.open(SENSOR_DATA_FILENAME);
-    if (myFile)
-    {
-        while (myFile.available()) {DEBUG_SERIAL.write(myFile.read());}
-        myFile.close();
-    } else 
-    { 
-        // if the file didn't open, print an error:
-        DEBUG_SERIAL.println("error opening file to read");
-    }
 }

@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "../setup/modules.h"
 
@@ -29,5 +32,15 @@ int BatteryLevel() {
   float batteryLevel = BATTERY_SCALE_A * batteryVoltage * batteryVoltage + BATTERY_SCALE_B * batteryVoltage + BATTERY_OFFSET;
 
   return (int)batteryLevel;
+}
+
+/**
+ * @brief Prints out the battery level
+ * 
+ */
+void printBatteryLevel(){
+    DEBUG_SERIAL.print("Battery level: ");
+    DEBUG_SERIAL.print(BatteryLevel());
+    DEBUG_SERIAL.println(" %");
 }
 

@@ -1,30 +1,24 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "modules.h"
 
-#define MAX_FLOATS                  15  // Number of sensor data that we will receive
-#define NUM_VALUES                  10 // Amount of CH4 sensor volts to calculate the standard deviation from.
+#define MAX_FLOATS                  15              // Number of sensor data that we will receive
+#define NUM_VALUES                  10              // Amount of CH4 sensor volts to calculate the standard deviation from.
 #define SENSOR_DATA_FILENAME        "results.txt"
 #define DEPTH_THRESHOLD             0.1
-#define RX_TX_STABILITY_TIME        5000
 
 /* Communication - Serial */
 #define DEBUG_SERIAL                Serial
 #define DEBUG_SERIAL_BAUDRATE       9600
 
-#define COM_LORA                    Serial3
-#define COM_LORA_BAUDRATE           9600
-
 #define CANNISTER_SERIAL            Serial2
 #define CANNISTER_SERIAL_BAUDRATE   9600
 
-// LoRa
-#define CMD_TIMEOUT                 5000
-#define JOIN_TIMEOUT                12000
-
 // Depth sensor
-#define REF_PRESSURE                101325  // Pa
-#define WATER_DENSITY               997     // kg/m^3
-#define G_ACC                       9.80665 // m/s^2
+#define WATER_DENSITY               997             // kg/m^3
+#define G_ACC                       9.80665         // m/s^2
 
 // Brake motor
 #define BRAKE_REVOLUTION            2.6

@@ -1,3 +1,6 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "../setup/modules.h"
 
@@ -26,12 +29,9 @@ void reactToCommand(String commandReceivedFromLora){
     
     } else if (commandReceivedFromLora.startsWith("B") && cmd_len == 1){
         DEBUG_SERIAL.println("Message received: B. Measuring battery level...");
-        measureBatteryStatus();
-    } else if (commandReceivedFromLora.startsWith("S") && cmd_len == 1){
-        DEBUG_SERIAL.println("Message received: B. Measuring solar level...");
-        measureSolarStatus();
+        printBatteryLevel();
     } else {
-        DEBUG_SERIAL.println("Message doesn't start with M, B or S");
+        DEBUG_SERIAL.println("Message doesn't start with M or B");
     }
 }
 
@@ -70,16 +70,3 @@ bool goToDepthAndMeasure(int destinationDepth) {
         return false;
     }
 }
-
-/**
- * @brief Does nothing right now.
- * 
- */
-void measureBatteryStatus(){;}
-
-
-/**
- * @brief Does nothing right now.
- * 
- */
-void measureSolarStatus(){;}

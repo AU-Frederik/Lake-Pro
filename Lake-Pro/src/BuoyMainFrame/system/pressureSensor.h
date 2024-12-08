@@ -1,7 +1,9 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "../setup/modules.h"
 
-// Measures pressure on the HP20 sensor, given a pointer to the global variable
 /**
  * @brief Measures the reference pressure using the HP20x sensor.
  * @param pressure a float pointer to the global variable.

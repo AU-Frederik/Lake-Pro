@@ -1,17 +1,18 @@
+// Author: Mechatronics Group 3
+// Date: 20-12-2024
+
 #pragma once
 #include "modules.h"
 
 // Function declaration
 void    parseDataFromCannister(String);
 
-
 // Control
 bool    goToDepthAndMeasure(int);
-void    enableManualMode();
 void    reactToCommand(String);
 
 // Motors
-void    measureMotorPins();
+void    checkMotorButtons();
 void    moveCableMotorUp();
 void    moveCableMotorDown();
 void    turnOffCableMotor();
@@ -20,11 +21,6 @@ void    brakeCable(long);
 void    unbrakeCable(long);
 void    shutOffBrakeMotor();
 void    turnOnBrakeMotor();
-
-// LoRa
-bool    sendCommandAndReceiveResponse(const String &command, const char *expectedResponse = "OK", unsigned long timeout = 2000);
-bool    LoRaConfigure();
-String  stringToHex(const String&);
 
 // Pressure sensor
 float   measureRefPressure();
@@ -40,17 +36,16 @@ void    printDataToSDCard(String);
 void    setUpSDCard();
 
 // Battery & Solar
-void    measureBatteryStatus();
-void    measureSolarStatus();
+void    printBatteryLevel();
 
 // General
-float   calculateDepth(float, float);
+float   calculateAndOutputDepth(float, float);
 void    turnOnCannister();
 void    setupCommunication();
-void    runAllSetups();
 void    outputDepth(float, float);
 String  sendCommandToCannisterAndReceiveSensorData(char);
+void    parseDataAndSaveToSDCard(String dataString);
 
-
+// For CH4 equilibrium measurements
 float calculateStandardDeviation(float*, unsigned int);
 void updateCH4SensorVoltHistory(float);
