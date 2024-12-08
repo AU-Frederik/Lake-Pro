@@ -9,6 +9,7 @@
  */
 float calculateDepth(float referencePressure, float outsidePressure){
     depth = (outsidePressure-referencePressure)/(WATER_DENSITY*G_ACC);
+    depth = depth*100; // Convert to centimeters
     return depth;
 }
 

@@ -15,8 +15,8 @@ void initAllPins(){
 
     // Input from buttons
     pinMode(MOTOR_SWITCH_AUT,   INPUT_PULLUP);
-    pinMode(MOTOR_BUTTON_RIGHT, INPUT_PULLUP);
-    pinMode(MOTOR_BUTTON_LEFT,  INPUT_PULLUP);
+    pinMode(MOTOR_BUTTON_UP, INPUT_PULLUP);
+    pinMode(MOTOR_BUTTON_DOWN,  INPUT_PULLUP);
 
     // Stepper motor for brake
     pinMode(MOTOR_SLEEP_PIN,  OUTPUT);
