@@ -8,8 +8,8 @@
 #define MOTOR_DOWN_PIN          10
 #define MOTOR_UP_PIN            8
 #define MOTOR_SWITCH_AUT        3    
-#define MOTOR_BUTTON_RIGHT      5
-#define MOTOR_BUTTON_LEFT       4
+#define MOTOR_BUTTON_UP         4
+#define MOTOR_BUTTON_DOWN       5
 
 // Turns on the cannister on the PCB
 #define CannisterON_Pin         6

@@ -12,7 +12,9 @@ void reactToCommand(String commandReceivedFromLora){
     if (commandReceivedFromLora.startsWith("M") && cmd_len == 3){
         DEBUG_SERIAL.println("Message received: M. Changing depth...");
         String numericPart = commandReceivedFromLora.substring(1);
-        int maxDepth = numericPart.toInt(); //10
+        int maxDepth = numericPart.toInt(); // 10
+        DEBUG_SERIAL.print("Max depth: ");
+        DEBUG_SERIAL.println(maxDepth);
         
         if (!isDestinationReached){
             isDestinationReached = goToDepthAndMeasure(destinationDepth);

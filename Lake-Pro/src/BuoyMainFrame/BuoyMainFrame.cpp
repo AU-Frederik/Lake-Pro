@@ -30,6 +30,7 @@ void setup() {
 }
 
 void loop() {
+
     String dataString = "";
     float referencePressure = measureRefPressure();
     
@@ -38,18 +39,31 @@ void loop() {
     // Check the manual buttons, S -> Manual mode, R -> Automatic mode
     measureMotorPins();
     if (manualMode){
-        enableManualMode();
+        //enableManualMode();
     } else {
         reactToCommand(commandReceivedFromLora);
     }
     
     dataString = sendCommandToCannisterAndReceiveSensorData(commandReceivedFromLora.charAt(0));
+    
+        DEBUG_SERIAL.print(myRTC.getYear(), DEC);
+        DEBUG_SERIAL.print("-");
+        DEBUG_SERIAL.print(myRTC.getMonth(century), DEC);
+        DEBUG_SERIAL.print("-");
+        DEBUG_SERIAL.print(myRTC.getDate(), DEC);
+        DEBUG_SERIAL.print(" ");
+        DEBUG_SERIAL.print(myRTC.getHour(h12Flag, pmFlag), DEC); //24-hr
+        DEBUG_SERIAL.print(":");
+        DEBUG_SERIAL.print(myRTC.getMinute(), DEC);
+        DEBUG_SERIAL.print(": ");
+        DEBUG_SERIAL.print(myRTC.getSecond(), DEC);
+        DEBUG_SERIAL.println(" ; ");
 
     if (isSensorData && countDataReceived > 3){
         parseDataFromCannister(dataString);
         printTimeToSD();
         printDataToSDCard(dataString);
-        depth = calculateDepth(referencePressure, outsidePressure);
+        depth = calculateDepth(referencePressure, outsidePressure); // depth in cm
         outputDepth(depth, referencePressure);
         DEBUG_SERIAL.print("Battery level: ");
         DEBUG_SERIAL.print(BatteryLevel());
@@ -61,7 +75,7 @@ void loop() {
 
 String sendCommandToCannisterAndReceiveSensorData(char command){
     
-    CANNISTER_SERIAL.println(command);
+    CANNISTER_SERIAL.print(command);
     DEBUG_SERIAL.print("Sending command: ");
     DEBUG_SERIAL.println(command);
     delay(1000);

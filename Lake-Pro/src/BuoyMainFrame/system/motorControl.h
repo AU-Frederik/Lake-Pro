@@ -34,8 +34,8 @@ void turnOffCableMotor(){
  * 
  */
 void measureMotorPins(){
-    turnMotorCCW = digitalRead(MOTOR_BUTTON_LEFT);
-    turnMotorCW  = digitalRead(MOTOR_BUTTON_RIGHT);
+    turnMotorCCW = digitalRead(MOTOR_BUTTON_DOWN);
+    turnMotorCW  = digitalRead(MOTOR_BUTTON_UP);
     
     if (!turnMotorCCW && !turnMotorCW) {
         delay(1500);
@@ -44,8 +44,19 @@ void measureMotorPins(){
             DEBUG_SERIAL.println("Changing to Automatic mode!");
         } else {
             manualMode = true;
+            isCableBraked = true;
+            unbrakeCable(STEPS_TO_BRAKE);
             DEBUG_SERIAL.println("Changing to Manual mode!");
         }
+    }
+    else if (!turnMotorCW && turnMotorCCW && manualMode) {
+        moveCableMotorUp();
+    }
+    else if (turnMotorCW && !turnMotorCCW && manualMode) {
+        moveCableMotorDown();
+    }
+    else if (turnMotorCW && turnMotorCCW && manualMode) {
+        turnOffCableMotor();
     }
 }
 
