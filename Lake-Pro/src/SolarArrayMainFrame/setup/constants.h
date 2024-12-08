@@ -7,5 +7,5 @@
 
 #define DEBUG_SERIAL        Serial
 
-#define beginThreshold      40
-#define stopThreshold       10
+#define beginThreshold      50
+#define stopThreshold       5
