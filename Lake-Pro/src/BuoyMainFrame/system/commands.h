@@ -12,7 +12,7 @@ void reactToCommand(String commandReceivedFromLora){
     int cmd_len = commandReceivedFromLora.length();
 
     // Checks if the first character is either M, B or S (Measure, Battery status, Solar status)
-    if (commandReceivedFromLora.startsWith("M") && cmd_len == 3){
+    if (commandReceivedFromLora.startsWith("M")){
         DEBUG_SERIAL.println("Message received: M. Changing depth...");
         String numericPart = commandReceivedFromLora.substring(1);
         int maxDepth = numericPart.toInt(); // 10

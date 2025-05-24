@@ -25,7 +25,7 @@ void loop() {
     String dataString = ""; // Resets the data string each iteration
     float referencePressure = measureRefPressure(); // Measures the reference pressure
     
-    String commandReceivedFromLora = "M10"; // Set manually right now, as LoRa has not been implemented
+    String commandReceivedFromLora = "M100"; // Set manually right now, as LoRa has not been implemented
 
     // Check the manual buttons and moves accordingly. Also changes mode automatic/manual when both buttons are pressed.
     checkMotorButtons();
@@ -37,6 +37,8 @@ void loop() {
     
     // Send command to cannister and receive sensordata in a String
     dataString = sendCommandToCannisterAndReceiveSensorData(commandReceivedFromLora.charAt(0));
+
+    dataString = sendCommandToCannisterAndReceiveSensorData(commandReceivedFromLora.char(0));
 
     // This logic ensures that the buoy has three measurements when turning on, before it logs and prints it as they are unstable. 
     if (isSensorData && countDataReceived > 3){

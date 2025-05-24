@@ -46,6 +46,8 @@ void checkMotorButtons(){
         if (manualMode){
             manualMode = false;
             automaticMode = true;
+            isCableBraked = true;
+            unbrakeCable(STEPS_TO_BRAKE);
             DEBUG_SERIAL.println("Changing to Automatic mode!");
         } else {
             manualMode = true;
